@@ -2,6 +2,8 @@ using UnityEngine;
 
 using DG.Tweening;
 
+// XRI の XRSimpleInteractable の Hover Enter をトリガーに PowerOn をトグルする
+// クールダウンで連打防止し、DOTween でボタンの押下感アニメーションを再生
 public sealed class TouchToggleButton : MonoBehaviour
 {
     [Header("References")]

@@ -3,6 +3,8 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using R3;
 
+// PowerOn の状態に応じて Volume の Bloom/Vignette 強度を切り替えるバインダー
+// 未割当の参照は警告/エラーで停止
 public sealed class PostProcessStateBinder : MonoBehaviour
 {
     [Header("References")]
