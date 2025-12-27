@@ -47,8 +47,6 @@ public sealed class TouchToggleButton : MonoBehaviour
         // 「当たったら」＝ Hover Enter
         interactable.hoverEntered.AddListener(_ =>
         {
-            Debug.Log("[TouchToggleButton] hoverEntered fired!", this);
-
             if (Time.time - _lastFireTime < cooldownSeconds) return;
             _lastFireTime = Time.time;
 
