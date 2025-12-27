@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using R3;
@@ -16,6 +17,10 @@ public sealed class PostProcessStateBinder : MonoBehaviour
     [SerializeField] private float bloomOff = 0.2f;
     [SerializeField] private float vignetteOn = 0.35f;
     [SerializeField] private float vignetteOff = 0.10f;
+
+    [Header("Events")]
+    [SerializeField] private UnityEvent onPowerOn;
+    [SerializeField] private UnityEvent onPowerOff;
 
     private Bloom _bloom;
     private Vignette _vignette;
@@ -57,6 +62,11 @@ public sealed class PostProcessStateBinder : MonoBehaviour
                 // << post-processing Process >>
                 if (_bloom != null) _bloom.intensity.value = isOn ? bloomOn : bloomOff;
                 if (_vignette != null) _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
+                if (isOn) {
+                    onPowerOn?.Invoke();
+                } else {
+                    onPowerOff?.Invoke();
+                }
             })
             .AddTo(this);
     }
