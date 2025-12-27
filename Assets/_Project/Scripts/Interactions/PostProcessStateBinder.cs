@@ -49,9 +49,12 @@ public sealed class PostProcessStateBinder : MonoBehaviour
         if (_bloom == null) Debug.LogWarning("[PostProcessStateBinder] Bloom override not found in Volume profile.", this);
         if (_vignette == null) Debug.LogWarning("[PostProcessStateBinder] Vignette override not found in Volume profile.", this);
 
+        // << R3 Process >>
+        // isOn: holder.State.PowerOn（ReactiveProperty<bool>）から流れてくる「現在の電源状態」を受け取るための引数
         holder.State.PowerOn
             .Subscribe(isOn =>
             {
+                // << post-processing Process >>
                 if (_bloom != null) _bloom.intensity.value = isOn ? bloomOn : bloomOff;
                 if (_vignette != null) _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
             })

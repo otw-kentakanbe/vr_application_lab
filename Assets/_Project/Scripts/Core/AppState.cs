@@ -1,5 +1,6 @@
 using R3;
 
+// << R3 Process >>
 // アプリ全体の状態モデル
 // PowerOn を ReactiveProperty<bool> として保持し、他コンポーネントが購読できるようにする
 public sealed class AppState
