@@ -8,6 +8,9 @@ using R3;
 // 未割当の参照は警告/エラーで停止
 public sealed class PostProcessStateBinder : MonoBehaviour
 {
+    // << UnityAction Property >>
+    public event UnityAction<bool> PowerChanged;
+
     [Header("References")]
     [SerializeField] private AppStateHolder holder;
     [SerializeField] private Volume globalVolume;
@@ -19,7 +22,7 @@ public sealed class PostProcessStateBinder : MonoBehaviour
     [SerializeField] private float vignetteOff = 0.10f;
 
     [Header("Events")]
-    // << UnityEvent Process  >>
+    // << UnityEvent Property  >>
     [SerializeField] private UnityEvent onPowerOn;
     [SerializeField] private UnityEvent onPowerOff;
 
@@ -70,6 +73,9 @@ public sealed class PostProcessStateBinder : MonoBehaviour
                 } else {
                     onPowerOff?.Invoke();
                 }
+
+                // << UnityAction Process >>
+                PowerChanged?.Invoke(isOn);
             })
             .AddTo(this);
     }
