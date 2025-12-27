@@ -1,27 +1,28 @@
 using UnityEngine;
+using VContainer;
 
 // << UnityAction Process >>
 public sealed class PowerChangedListener : MonoBehaviour
 {
-    [SerializeField] private PostProcessStateBinder binder;
+    [Inject] private AppStateHolder holder;
 
     private void Awake()
     {
-        if (binder == null)
+        if (holder == null)
         {
-            Debug.LogError("[PowerChangedListener] PostProcessStateBinder is not assigned.", this);
+            Debug.LogError("[PowerChangedListener] AppStateHolder is not assigned.", this);
             enabled = false;
             return;
         }
 
         // 登録
-        binder.PowerChanged += HandlePowerChanged;
+        holder.PowerChanged += HandlePowerChanged;
     }
 
     private void OnDestroy()
     {
         // 解除
-        if (binder != null) binder.PowerChanged -= HandlePowerChanged;
+        if (holder != null) holder.PowerChanged -= HandlePowerChanged;
     }
 
     private void HandlePowerChanged(bool isOn)

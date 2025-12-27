@@ -2,17 +2,15 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using R3;
+using VContainer;
 
 // PowerOn の状態に応じて Volume の Bloom/Vignette 強度を切り替えるバインダー
 // 未割当の参照は警告/エラーで停止
 public sealed class PostProcessStateBinder : MonoBehaviour
 {
-    // << UnityAction Property >>
-    public event UnityAction<bool> PowerChanged;
+    [Inject] private AppStateHolder holder;
 
     [Header("References")]
-    [SerializeField] private AppStateHolder holder;
     [SerializeField] private Volume globalVolume;
 
     [Header("PowerOn Values")]
@@ -58,25 +56,26 @@ public sealed class PostProcessStateBinder : MonoBehaviour
         if (_bloom == null) Debug.LogWarning("[PostProcessStateBinder] Bloom override not found in Volume profile.", this);
         if (_vignette == null) Debug.LogWarning("[PostProcessStateBinder] Vignette override not found in Volume profile.", this);
 
-        // << R3 Process >>
-        // isOn: holder.State.PowerOn（ReactiveProperty<bool>）から流れてくる「現在の電源状態」を受け取るための引数
-        holder.State.PowerOn
-            .Subscribe(isOn =>
-            {
-                // << post-processing Process >>
-                if (_bloom != null) _bloom.intensity.value = isOn ? bloomOn : bloomOff;
-                if (_vignette != null) _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
-                
-                // << UnityEvent Process  >>
-                if (isOn) {
-                    onPowerOn?.Invoke();
-                } else {
-                    onPowerOff?.Invoke();
-                }
+        holder.PowerChanged += HandlePowerChanged;
+        HandlePowerChanged(holder.State.PowerOn.Value);
+    }
 
-                // << UnityAction Process >>
-                PowerChanged?.Invoke(isOn);
-            })
-            .AddTo(this);
+    private void OnDestroy()
+    {
+        if (holder != null) holder.PowerChanged -= HandlePowerChanged;
+    }
+
+    private void HandlePowerChanged(bool isOn)
+    {
+        // << post-processing Process >>
+        if (_bloom != null) _bloom.intensity.value = isOn ? bloomOn : bloomOff;
+        if (_vignette != null) _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
+
+        // << UnityEvent Process  >>
+        if (isOn) {
+            onPowerOn?.Invoke();
+        } else {
+            onPowerOff?.Invoke();
+        }
     }
 }

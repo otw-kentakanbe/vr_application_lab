@@ -1,13 +1,14 @@
 using UnityEngine;
-
 using DG.Tweening;
+using VContainer;
 
 // XRI の XRSimpleInteractable の Hover Enter をトリガーに PowerOn をトグルする
 // クールダウンで連打防止し、DOTween でボタンの押下感アニメーションを再生
 public sealed class TouchToggleButton : MonoBehaviour
 {
+    [Inject] private AppStateHolder holder;
+
     [Header("References")]
-    [SerializeField] private AppStateHolder holder;
     [SerializeField] private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable interactable;
     [SerializeField] private Transform buttonVisual;
 
@@ -52,11 +53,7 @@ public sealed class TouchToggleButton : MonoBehaviour
             _lastFireTime = Time.time;
 
             // << R3 Process >>
-            // 状態トグル
-            // ReactiveProperty<bool> が値変更を検知して購読者に通知する
-            // このプロジェクトでは PostProcessStateBinder が PowerOn を Subscribe しているので、同フレーム内で isOn が流れ、Bloom/Vignette の強度が即座に更新される
-            // isOn: 引数として渡される（（Subscribe は基本的に1つの引数のみ受け付ける）
-            // AddTo(this) により、バインダーが破棄されると購読も自動解除される
+            // 状態トグル（AppStateHolder が PowerChanged を発火）
             holder.State.PowerOn.Value = !holder.State.PowerOn.Value;
 
             // << DoTween >>
