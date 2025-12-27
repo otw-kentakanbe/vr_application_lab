@@ -19,6 +19,7 @@ public sealed class PostProcessStateBinder : MonoBehaviour
     [SerializeField] private float vignetteOff = 0.10f;
 
     [Header("Events")]
+    // << UnityEvent Process  >>
     [SerializeField] private UnityEvent onPowerOn;
     [SerializeField] private UnityEvent onPowerOff;
 
@@ -62,6 +63,8 @@ public sealed class PostProcessStateBinder : MonoBehaviour
                 // << post-processing Process >>
                 if (_bloom != null) _bloom.intensity.value = isOn ? bloomOn : bloomOff;
                 if (_vignette != null) _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
+                
+                // << UnityEvent Process  >>
                 if (isOn) {
                     onPowerOn?.Invoke();
                 } else {
