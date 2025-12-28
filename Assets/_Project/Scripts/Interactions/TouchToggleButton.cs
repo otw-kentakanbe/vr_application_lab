@@ -57,13 +57,13 @@ public sealed class TouchToggleButton : MonoBehaviour
             // << DoTween >>
             // 押した感（軽く・短く）
             buttonVisual.DOKill();
-            buttonVisual.localScale = Vector3.one;
-            buttonVisual.DOScale(1.6f, 0.12f)
-                .SetLoops(2, LoopType.Yoyo)
-                .SetUpdate(true);
+            // buttonVisual.localScale = Vector3.one;
+            // buttonVisual.DOScale(1.6f, 0.12f)
+            //     .SetLoops(2, LoopType.Yoyo)
+            //     .SetUpdate(true);
 
             // memo: Jump
-            // buttonVisual.DOJump(new Vector3(5, 0, 0), 3.0f, 2, 2.0f);
+            buttonVisual.DOJump(new Vector3(4, 0, 0), 0.5f, 1, 3.0f);
             
             // memo: Circle rotation,
             // buttonVisual.DOLocalPath(
