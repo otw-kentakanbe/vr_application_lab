@@ -24,33 +24,29 @@ public sealed class Hourly
 
 public sealed class WeatherForecastUI : MonoBehaviour
 {
-    private const int CacheTtlSeconds = 60 * 60;
-
-    [Header("API")]
-    [SerializeField] private string baseUrl =
-        "https://api.open-meteo.com/v1/forecast?hourly=temperature_2m";
-
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI outputText;
-    [SerializeField] private Button tokyoButton;
-    [SerializeField] private Button newYorkButton;
+    [SerializeField] private Transform buttonContainer;
+    [SerializeField] private Button buttonPrefab;
+
+    [Header("Config")]
+    [SerializeField] private WeatherForecastConfig config;
 
     private readonly Dictionary<string, CacheEntry> _cache = new();
+    private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
 
     private void Start()
     {
-        if (outputText == null || tokyoButton == null || newYorkButton == null)
+        if (outputText == null || config == null || buttonContainer == null || buttonPrefab == null)
         {
-            Debug.LogError("[WeatherForecastUI] UI references are not assigned.", this);
+            Debug.LogError("[WeatherForecastUI] UI or config references are not assigned.", this);
             enabled = false;
             return;
         }
 
         _cts = new CancellationTokenSource();
-        tokyoButton.onClick.AddListener(() => FetchCity("Tokyo", 35.68f, 139.76f).Forget());
-        tokyoButton.onClick.AddListener(() => Debug.Log("Tokyo clicked"));
-        newYorkButton.onClick.AddListener(() => FetchCity("NewYork", 40.71f, -74.01f).Forget());
+        BuildCityButtons();
         outputText.text = "Ready";
     }
 
@@ -63,24 +59,23 @@ public sealed class WeatherForecastUI : MonoBehaviour
             _cts = null;
         }
 
-        if (tokyoButton != null) tokyoButton.onClick.RemoveAllListeners();
-        if (newYorkButton != null) newYorkButton.onClick.RemoveAllListeners();
+        CleanupButtons();
     }
 
-    private async UniTask FetchCity(string city, float latitude, float longitude)
+    private async UniTask FetchCity(WeatherForecastConfig.CityConfig city)
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         // using cache if it exists.
-        if (_cache.TryGetValue(city, out var cached) && now - cached.FetchedAt <= CacheTtlSeconds)
+        if (_cache.TryGetValue(city.Key, out var cached) && now - cached.FetchedAt <= config.CacheTtlSeconds)
         {
             outputText.text = cached.DisplayText;
             return;
         }
 
-        outputText.text = $"Loading {city}...";
+        outputText.text = $"Loading {city.DisplayName}...";
 
-        var url = $"{baseUrl}&latitude={latitude.ToString(CultureInfo.InvariantCulture)}" +
-                  $"&longitude={longitude.ToString(CultureInfo.InvariantCulture)}";
+        var url = $"{config.BaseUrl}&latitude={city.Latitude.ToString(CultureInfo.InvariantCulture)}" +
+                  $"&longitude={city.Longitude.ToString(CultureInfo.InvariantCulture)}";
 
         // << API Connection Process >>
         using var req = UnityWebRequest.Get(url);
@@ -94,10 +89,41 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
         var json = req.downloadHandler.text;
         var data = JsonUtility.FromJson<OpenMeteoResponse>(json);
-        var displayText = BuildDisplayText(city, data);
+        var displayText = BuildDisplayText(city.DisplayName, data);
 
-        _cache[city] = new CacheEntry(displayText, now);
+        _cache[city.Key] = new CacheEntry(displayText, now);
         outputText.text = displayText;
+    }
+
+    private void BuildCityButtons()
+    {
+        CleanupButtons();
+
+        foreach (var city in config.Cities)
+        {
+            var button = Instantiate(buttonPrefab, buttonContainer);
+            _generatedButtons.Add(button);
+
+            var label = button.GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null) label.text = city.DisplayName;
+
+            button.onClick.AddListener(() => FetchCity(city).Forget());
+        }
+    }
+
+    private void CleanupButtons()
+    {
+        foreach (var button in _generatedButtons)
+        {
+            if (button != null) button.onClick.RemoveAllListeners();
+        }
+        _generatedButtons.Clear();
+
+        if (buttonContainer == null) return;
+        for (var i = buttonContainer.childCount - 1; i >= 0; i--)
+        {
+            Destroy(buttonContainer.GetChild(i).gameObject);
+        }
     }
 
     private static string BuildDisplayText(string city, OpenMeteoResponse data)
