@@ -70,6 +70,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
     private async UniTask FetchCity(string city, float latitude, float longitude)
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        // using cache if it exists.
         if (_cache.TryGetValue(city, out var cached) && now - cached.FetchedAt <= CacheTtlSeconds)
         {
             outputText.text = cached.DisplayText;
@@ -81,6 +82,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
         var url = $"{baseUrl}&latitude={latitude.ToString(CultureInfo.InvariantCulture)}" +
                   $"&longitude={longitude.ToString(CultureInfo.InvariantCulture)}";
 
+        // << API Connection Process >>
         using var req = UnityWebRequest.Get(url);
         await req.SendWebRequest().ToUniTask(cancellationToken: _cts.Token);
 
