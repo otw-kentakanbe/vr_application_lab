@@ -30,6 +30,11 @@ public sealed class WeatherForecastUI : MonoBehaviour
         }
 
         _cts = new CancellationTokenSource();
+        // ViewModel の ReactiveProperty を監視して反映する
+        // Model → ViewModel → View(UI) の流れ
+        // - Model: FetchCityAsync の戻り値（文字列）を返すだけ
+        // - ViewModel: DisplayText.Value = ... を更新
+        // - View: Subscribe で受け取り outputText.text を更新
         _viewModel = new WeatherForecastViewModel(config);
         _viewModel.DisplayText
             .Subscribe(text => outputText.text = text)
