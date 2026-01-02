@@ -1,26 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
-
-[Serializable]
-public sealed class OpenMeteoResponse
-{
-    public string timezone;
-    public Hourly hourly;
-}
-
-[Serializable]
-public sealed class Hourly
-{
-    public string[] time;
-    public float[] temperature_2m;
-}
+using R3;
 
 public sealed class WeatherForecastUI : MonoBehaviour
 {
@@ -32,9 +16,9 @@ public sealed class WeatherForecastUI : MonoBehaviour
     [Header("Config")]
     [SerializeField] private WeatherForecastConfig config;
 
-    private readonly Dictionary<string, CacheEntry> _cache = new();
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
+    private WeatherForecastViewModel _viewModel;
 
     private void Start()
     {
@@ -46,8 +30,12 @@ public sealed class WeatherForecastUI : MonoBehaviour
         }
 
         _cts = new CancellationTokenSource();
+        _viewModel = new WeatherForecastViewModel(config);
+        _viewModel.DisplayText
+            .Subscribe(text => outputText.text = text)
+            .AddTo(this);
+
         BuildCityButtons();
-        outputText.text = "Ready";
     }
 
     private void OnDisable()
@@ -60,46 +48,18 @@ public sealed class WeatherForecastUI : MonoBehaviour
         }
 
         CleanupButtons();
-    }
-
-    private async UniTask FetchCity(WeatherForecastConfig.CityConfig city)
-    {
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        // using cache if it exists.
-        if (_cache.TryGetValue(city.Key, out var cached) && now - cached.FetchedAt <= config.CacheTtlSeconds)
+        if (_viewModel != null)
         {
-            outputText.text = cached.DisplayText;
-            return;
+            _viewModel.Dispose();
+            _viewModel = null;
         }
-
-        outputText.text = $"Loading {city.DisplayName}...";
-
-        var url = $"{config.BaseUrl}&latitude={city.Latitude.ToString(CultureInfo.InvariantCulture)}" +
-                  $"&longitude={city.Longitude.ToString(CultureInfo.InvariantCulture)}";
-
-        // << API Connection Process >>
-        using var req = UnityWebRequest.Get(url);
-        await req.SendWebRequest().ToUniTask(cancellationToken: _cts.Token);
-
-        if (req.result != UnityWebRequest.Result.Success)
-        {
-            outputText.text = $"API Error: {req.error}";
-            return;
-        }
-
-        var json = req.downloadHandler.text;
-        var data = JsonUtility.FromJson<OpenMeteoResponse>(json);
-        var displayText = BuildDisplayText(city.DisplayName, data);
-
-        _cache[city.Key] = new CacheEntry(displayText, now);
-        outputText.text = displayText;
     }
 
     private void BuildCityButtons()
     {
         CleanupButtons();
 
-        foreach (var city in config.Cities)
+        foreach (var city in _viewModel.Cities)
         {
             var button = Instantiate(buttonPrefab, buttonContainer);
             _generatedButtons.Add(button);
@@ -107,7 +67,8 @@ public sealed class WeatherForecastUI : MonoBehaviour
             var label = button.GetComponentInChildren<TextMeshProUGUI>();
             if (label != null) label.text = city.DisplayName;
 
-            button.onClick.AddListener(() => FetchCity(city).Forget());
+            var capturedCity = city;
+            button.onClick.AddListener(() => _viewModel.SelectCity(capturedCity, _cts.Token).Forget());
         }
     }
 
@@ -126,28 +87,4 @@ public sealed class WeatherForecastUI : MonoBehaviour
         }
     }
 
-    private static string BuildDisplayText(string city, OpenMeteoResponse data)
-    {
-        if (data?.hourly?.time == null || data.hourly.temperature_2m == null || data.hourly.time.Length == 0)
-        {
-            return $"{city}\nNo data.";
-        }
-
-        var time = data.hourly.time[0];
-        var temp = data.hourly.temperature_2m[0];
-
-        return $"{city}\nTimezone: {data.timezone}\nTime: {time}\nTemp: {temp} °C";
-    }
-
-    private readonly struct CacheEntry
-    {
-        public CacheEntry(string displayText, long fetchedAt)
-        {
-            DisplayText = displayText;
-            FetchedAt = fetchedAt;
-        }
-
-        public string DisplayText { get; }
-        public long FetchedAt { get; }
-    }
 }

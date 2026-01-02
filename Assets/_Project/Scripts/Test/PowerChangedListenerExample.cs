@@ -1,4 +1,5 @@
 using UnityEngine;
+using R3;
 using VContainer;
 
 // << UnityAction Process >>
@@ -15,14 +16,9 @@ public sealed class PowerChangedListener : MonoBehaviour
             return;
         }
 
-        // 登録
-        holder.PowerChanged += HandlePowerChanged;
-    }
-
-    private void OnDestroy()
-    {
-        // 解除
-        if (holder != null) holder.PowerChanged -= HandlePowerChanged;
+        holder.State.PowerOn
+            .Subscribe(HandlePowerChanged)
+            .AddTo(this);
     }
 
     private void HandlePowerChanged(bool isOn)

@@ -1,12 +1,12 @@
+using System;
 using UnityEngine;
 using DG.Tweening;
-using VContainer;
 
 // XRI の XRSimpleInteractable の Hover Enter をトリガーに PowerOn をトグルする
 // クールダウンで連打防止し、DOTween でボタンの押下感アニメーションを再生
 public sealed class TouchToggleButton : MonoBehaviour
 {
-    [Inject] private AppStateHolder holder;
+    public event Action ToggleRequested;
 
     [Header("References")]
     [SerializeField] private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable interactable;
@@ -28,13 +28,6 @@ public sealed class TouchToggleButton : MonoBehaviour
 
     private void Awake()
     {
-        if (holder == null)
-        {
-            Debug.LogError("[TouchToggleButton] AppStateHolder is not assigned.", this);
-            enabled = false;
-            return;
-        }
-
         if (interactable == null)
         {
             Debug.LogError("[TouchToggleButton] XRSimpleInteractable is not assigned.", this);
@@ -50,9 +43,7 @@ public sealed class TouchToggleButton : MonoBehaviour
             if (Time.time - _lastFireTime < cooldownSeconds) return;
             _lastFireTime = Time.time;
 
-            // << R3 Process >>
-            // 状態トグル（AppStateHolder が PowerChanged を発火）
-            holder.State.PowerOn.Value = !holder.State.PowerOn.Value;
+            ToggleRequested?.Invoke();
 
             // << DoTween >>
             // 押した感（軽く・短く）
