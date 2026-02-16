@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 /**
 * PowerStateEffectsController クラス
 * - AppStatePresenter から状態変化を受けて、Bloom や Vignette などのエフェクトの強さを切り替える
-* - UnityEvent を用いて、状態変化に応じた追加の処理を外部から設定できるようにする
+* - UnityEvent を用いて、 Inspector 上から状態変化に応じた追加処理を設定できる
 */
 public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutput
 {
