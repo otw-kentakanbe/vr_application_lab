@@ -8,6 +8,7 @@ using VContainer.Unity;
 [DefaultExecutionOrder(-10000)]
 public sealed class ProjectLifetimeScope : LifetimeScope
 {
+    private const string LogPrefix = "[ProjectLifetimeScope]";
     private static readonly Vector3 ToggleClickJumpEndPosition = new(4f, 0f, 0f);
     private const float ToggleClickJumpPower = 0.5f;
     private const int ToggleClickJumpCount = 1;
@@ -23,6 +24,8 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     protected override void Configure(IContainerBuilder builder)
     {
+        if (!ValidateRequiredReferences()) return;
+
         RegisterSharedState(builder);
         RegisterPower(builder);
         RegisterWeather(builder);
@@ -97,5 +100,14 @@ public sealed class ProjectLifetimeScope : LifetimeScope
     {
         if (_weatherForecastConfig == null) return;
         builder.RegisterInstance(_weatherForecastConfig);
+    }
+
+    private bool ValidateRequiredReferences()
+    {
+        if (_weatherForecastConfig != null) return true;
+
+        Debug.LogError($"{LogPrefix} WeatherForecastConfig is required but not assigned.", this);
+        enabled = false;
+        return false;
     }
 }
