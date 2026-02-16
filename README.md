@@ -1,5 +1,5 @@
 # VR Application Lab
-Unity の VR アプリケーション検証プロジェクト 
+Unity の VR 開発検証用プロジェクト
 
 > [!TIP]
 > 実装は `Assets/_Project` 配下に集約
