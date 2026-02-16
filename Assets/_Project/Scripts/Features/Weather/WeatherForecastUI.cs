@@ -55,15 +55,12 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_cts == null)
+        if (_cts != null)
         {
-            CleanupButtons();
-            return;
+            _cts.Cancel();
+            _cts.Dispose();
+            _cts = null;
         }
-
-        _cts.Cancel();
-        _cts.Dispose();
-        _cts = null;
 
         CleanupButtons();
     }
