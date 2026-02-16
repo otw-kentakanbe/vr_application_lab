@@ -3,11 +3,11 @@ using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-/**
-* PowerStateEffectsController クラス
-* - AppStatePresenter から状態変化を受けて、Bloom や Vignette などのエフェクトの強さを切り替える
-* - UnityEvent を用いて、 Inspector 上から状態変化に応じた追加処理を設定できる
-*/
+/// <summary>
+/// PowerStateEffectsController クラス
+/// - AppStatePresenter から状態変化を受けて、Bloom や Vignette などのエフェクトの強さを切り替える
+/// - UnityEvent を用いて、 Inspector 上から状態変化に応じた追加処理を設定できる
+/// </summary>
 public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutput
 {
     private const string LogPrefix = "[PowerStateEffectsController]";

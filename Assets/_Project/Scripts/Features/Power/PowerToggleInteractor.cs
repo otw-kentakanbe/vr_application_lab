@@ -4,11 +4,11 @@ using UnityEngine.Serialization;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-/**
-* PowerToggleInteractor クラス
-* - タッチ入力を検知し、ToggleRequested イベントを発火する
-* - 視覚フィードバック（DOTween）は PowerToggleClickedView に委譲する
-*/
+/// <summary>
+/// PowerToggleInteractor クラス
+/// - タッチ入力を検知し、ToggleRequested イベントを発火する
+/// - 視覚フィードバック（DOTween）は PowerToggleClickedView に委譲する
+/// </summary>
 public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 {
     private const string LogPrefix = "[PowerToggleInteractor]";

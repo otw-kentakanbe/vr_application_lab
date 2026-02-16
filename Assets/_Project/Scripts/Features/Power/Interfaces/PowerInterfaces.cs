@@ -1,18 +1,17 @@
 using System;
 
-/**
-* PowerFeature Interface クラス
-*/
+/// <summary>
+/// PowerFeature Interface クラス
+/// </summary>
 public interface IPowerToggleInput
 {
     event Action ToggleRequested;
 }
 
-/**
-* PowerFeature Interface クラス
-*/
+/// <summary>
+/// PowerFeature Interface クラス
+/// </summary>
 public interface IPowerStateOutput
 {
     void RenderPowerState(bool isOn);
 }
-

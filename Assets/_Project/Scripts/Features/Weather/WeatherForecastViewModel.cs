@@ -5,11 +5,11 @@ using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
 
-/**
-* WeatherForecastViewModel クラス
-* - WeatherForecastModel からデータを取得して、UI に表示するためのロジックを担当する
-* - 都市が選択されたときに、WeatherForecastModel の FetchCityAsync を呼び出して、結果を ReactiveProperty<string> に反映する
-*/
+/// <summary>
+/// WeatherForecastViewModel クラス
+/// - WeatherForecastModel からデータを取得して、UI に表示するためのロジックを担当する
+/// - 都市が選択されたときに、WeatherForecastModel の FetchCityAsync を呼び出して、結果を ReactiveProperty<string> に反映する
+/// </summary>
 public sealed class WeatherForecastViewModel : IDisposable
 {
     private const string LogPrefix = "[WeatherForecastViewModel]";

@@ -2,9 +2,9 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-/**
-* Secene 全体の依存関係を管理する LifetimeScope クラス
-*/
+/// <summary>
+/// Secene 全体の依存関係を管理する LifetimeScope クラス
+/// </summary>
 [DefaultExecutionOrder(-10000)]
 public sealed class ProjectLifetimeScope : LifetimeScope
 {

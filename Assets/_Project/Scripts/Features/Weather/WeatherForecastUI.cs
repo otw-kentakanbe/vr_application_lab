@@ -7,12 +7,12 @@ using UnityEngine.UI;
 using R3;
 using VContainer;
 
-/**
-* WeatherForecastUI クラス
-* - ViewModel からデータを受け取り、UI に表示するためのロジックを担当する
-* - ViewModel の ReactiveProperty<string> を監視して、天気予報のテキストを outputText に反映する
-* - 都市選択のボタンを動的に生成し、クリックされたときに ViewModel の SelectCityAsync を呼び出す
-*/
+/// <summary>
+/// WeatherForecastUI クラス
+/// - ViewModel からデータを受け取り、UI に表示するためのロジックを担当する
+/// - ViewModel の ReactiveProperty<string> を監視して、天気予報のテキストを outputText に反映する
+/// - 都市選択のボタンを動的に生成し、クリックされたときに ViewModel の SelectCityAsync を呼び出す
+/// </summary>
 public sealed class WeatherForecastUI : MonoBehaviour
 {
     private const string LogPrefix = "[WeatherForecastUI]";

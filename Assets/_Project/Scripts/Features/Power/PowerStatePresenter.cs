@@ -2,12 +2,12 @@ using R3;
 using UnityEngine;
 using VContainer;
 
-/**
-* PowerStatePresenter クラス
-* - AppStateHolder から状態を取得し、IPowerStateOutput を通じて状態変化を通知する
-* - IPowerToggleInput のイベントを購読して、状態の切り替えを行う
-* - IPowerStateOutput の RenderPowerState を呼び出して、UI やエフェクトの更新を行う
-*/
+/// <summary>
+/// PowerStatePresenter クラス
+/// - AppStateHolder から状態を取得し、IPowerStateOutput を通じて状態変化を通知する
+/// - IPowerToggleInput のイベントを購読して、状態の切り替えを行う
+/// - IPowerStateOutput の RenderPowerState を呼び出して、UI やエフェクトの更新を行う
+/// </summary>
 public sealed class PowerStatePresenter : MonoBehaviour
 {
     private const string LogPrefix = "[PowerStatePresenter]";

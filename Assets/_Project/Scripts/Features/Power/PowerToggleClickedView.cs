@@ -1,11 +1,11 @@
 using DG.Tweening;
 using UnityEngine;
 
-/**
-* PowerToggleClickedView クラス
-* - PowerToggleInteractor のトグルがクリックされたときのエフェクトを再生するクラス
-* - DOJump を用いて、トグルがクリックされたときに、トグルのビジュアルがジャンプするエフェクトを実装する
-*/
+/// <summary>
+/// PowerToggleClickedView クラス
+/// - PowerToggleInteractor のトグルがクリックされたときのエフェクトを再生するクラス
+/// - DOJump を用いて、トグルがクリックされたときに、トグルのビジュアルがジャンプするエフェクトを実装する
+/// </summary>
 public sealed class PowerToggleClickedView
 {
     private readonly Transform _target;
@@ -36,4 +36,3 @@ public sealed class PowerToggleClickedView
         _target.DOJump(_jumpEndPosition, _jumpPower, _numJumps, _duration);
     }
 }
-

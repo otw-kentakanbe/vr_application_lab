@@ -20,10 +20,10 @@ public sealed class Hourly
     public float[] temperature_2m;
 }
 
-/**
-* WeatherForecastModel クラス
-* - 天気予報の API からデータを取得する
-*/
+/// <summary>
+/// WeatherForecastModel クラス
+/// - 天気予報の API からデータを取得する
+/// </summary>
 public sealed class WeatherForecastModel
 {
     private const int DefaultCacheTtlSeconds = 60 * 60;
