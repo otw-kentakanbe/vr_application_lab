@@ -12,7 +12,7 @@ public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 {
     private const string LogPrefix = "[PowerToggleInteractor]";
     private const float DefaultCooldownSeconds = 0.25f;
-    private const float DefaultLastFireTime = -999f;
+    private const float DefaultLastFireTime = float.NegativeInfinity;
 
     public event Action ToggleRequested;
     public Transform InteractorTransform => _interactorVisual;
