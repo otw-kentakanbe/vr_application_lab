@@ -531,7 +531,6 @@ MonoBehaviour:
   postProcessStateBinder: {fileID: 1945497406}
   touchToggleButton: {fileID: 1647894289}
   appStatePresenter: {fileID: 419150933}
-  powerChangedListener: {fileID: 0}
 --- !u!4 &605943105
 Transform:
   m_ObjectHideFlags: 0
