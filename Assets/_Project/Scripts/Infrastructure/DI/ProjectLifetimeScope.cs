@@ -3,7 +3,7 @@ using VContainer;
 using VContainer.Unity;
 
 /// <summary>
-/// Secene 全体の依存関係を管理する LifetimeScope クラス
+/// Scene 全体の依存関係を管理する LifetimeScope クラス
 /// </summary>
 [DefaultExecutionOrder(-10000)]
 public sealed class ProjectLifetimeScope : LifetimeScope

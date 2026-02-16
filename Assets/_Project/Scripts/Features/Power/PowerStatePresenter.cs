@@ -45,7 +45,7 @@ public sealed class PowerStatePresenter : MonoBehaviour
     {
         // play the toggle click effect.(DoTween)
         _powerToggleClickedView.Play();
-        // swith the power state,
+        // switch the power state,
         _holder.State.ReactivePowerOn.Value = !_holder.State.ReactivePowerOn.Value;
     }
 }
