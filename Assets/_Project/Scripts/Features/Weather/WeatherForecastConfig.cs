@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// << ScriptableObject Process >>
+/**
+* WeatherForecastConfig クラス
+* - 天気予報の API の endpoint や、都市の情報を保持する ScriptableObject
+*/
 [CreateAssetMenu(menuName = "Config/Weather Forecast Config")]
 public sealed class WeatherForecastConfig : ScriptableObject
 {

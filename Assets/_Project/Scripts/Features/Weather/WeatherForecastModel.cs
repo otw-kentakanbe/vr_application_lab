@@ -37,6 +37,7 @@ public sealed class WeatherForecastModel
     public async UniTask<string> FetchCityAsync(WeatherForecastConfig.CityConfig city, CancellationToken token)
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        // return cache if exists and not expired.
         if (_cache.TryGetValue(city.Key, out var cached) && now - cached.FetchedAt <= _cacheTtlSeconds)
         {
             return cached.DisplayText;
@@ -45,6 +46,7 @@ public sealed class WeatherForecastModel
         var url = $"{_baseUrl}&latitude={city.Latitude.ToString(CultureInfo.InvariantCulture)}" +
                   $"&longitude={city.Longitude.ToString(CultureInfo.InvariantCulture)}";
 
+        // using var: IDisposable を実装しているオブジェクトをスコープの終わりで自動的に破棄する
         using var req = UnityWebRequest.Get(url);
         await req.SendWebRequest().ToUniTask(cancellationToken: token);
 

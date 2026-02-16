@@ -17,12 +17,12 @@ public sealed class WeatherForecastUI : MonoBehaviour
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
     private CancellationTokenSource _requestCts;
-    [Inject] private WeatherForecastViewModel _viewModel;
+    [Inject] private WeatherForecastViewModel _forecastViewModel;
     private bool _isLoading;
 
     private void Start()
     {
-        if (outputText == null || buttonContainer == null || buttonPrefab == null || _viewModel == null)
+        if (outputText == null || buttonContainer == null || buttonPrefab == null || _forecastViewModel == null)
         {
             Debug.LogError("[WeatherForecastUI] UI references or dependencies are not assigned.", this);
             enabled = false;
@@ -30,12 +30,12 @@ public sealed class WeatherForecastUI : MonoBehaviour
         }
 
         _cts = new CancellationTokenSource();
-        // ViewModel の ReactiveProperty を監視して反映する
-        // Model → ViewModel → View(UI) の流れ
-        // - Model: FetchCityAsync の戻り値（文字列）を返すだけ
-        // - ViewModel: DisplayText.Value = ... を更新
-        // - View: Subscribe で受け取り outputText.text を更新
-        _viewModel.DisplayText
+
+        // ViewModel の DisplayText を監視して、UI の outputText に反映する
+        // ReactiveProperty を Subscribe して、値が変わるたびに outputText.text を更新する
+        // * text は、_forecastViewModel.DisplayText（ReactiveProperty<string>）から流れてくる現在値/更新値
+        // AddTo(this) を呼ぶことで、この MonoBehaviour が破棄されるときに自動的に購読解除される
+        _forecastViewModel.DisplayText
             .Subscribe(text => outputText.text = text)
             .AddTo(this);
 
@@ -60,7 +60,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
     {
         CleanupButtons();
 
-        foreach (var city in _viewModel.Cities)
+        foreach (var city in _forecastViewModel.Cities)
         {
             var button = Instantiate(buttonPrefab, buttonContainer);
             _generatedButtons.Add(button);
@@ -90,16 +90,19 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private async UniTaskVoid SelectCityAsync(WeatherForecastConfig.CityConfig city)
     {
-        if (_viewModel == null || _cts == null || _isLoading) return;
+        if (_forecastViewModel == null || _cts == null || _isLoading) return;
 
         _isLoading = true;
         SetButtonsInteractable(false);
+
+        // if there is an ongoing request, cancel it before starting a new one.
         CancelAndDisposeRequestCts();
         _requestCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
 
         try
         {
-            await _viewModel.SelectCity(city, _requestCts.Token);
+            // unitask の await で、キャンセルトークンを渡すことで、リクエストがキャンセルされたときに OperationCanceledException がスローされる
+            await _forecastViewModel.SelectCity(city, _requestCts.Token);
         }
         catch (System.OperationCanceledException)
         {
