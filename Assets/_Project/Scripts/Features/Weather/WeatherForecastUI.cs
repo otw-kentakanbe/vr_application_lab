@@ -7,6 +7,12 @@ using UnityEngine.UI;
 using R3;
 using VContainer;
 
+/**
+* WeatherForecastUI クラス
+* - ViewModel からデータを受け取り、UI に表示するためのロジックを担当する
+* - ViewModel の ReactiveProperty<string> を監視して、天気予報のテキストを outputText に反映する
+* - 都市選択のボタンを動的に生成し、クリックされたときに ViewModel の SelectCityAsync を呼び出す
+*/
 public sealed class WeatherForecastUI : MonoBehaviour
 {
     [Header("UI")]
@@ -16,9 +22,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
-    private CancellationTokenSource _requestCts;
     [Inject] private WeatherForecastViewModel _forecastViewModel;
-    private bool _isLoading;
 
     private void Start()
     {
@@ -38,14 +42,15 @@ public sealed class WeatherForecastUI : MonoBehaviour
         _forecastViewModel.ReactiveDisplayText
             .Subscribe(text => outputText.text = text)
             .AddTo(this);
+        _forecastViewModel.ReactiveIsLoading
+            .Subscribe(isLoading => SetButtonsInteractable(!isLoading))
+            .AddTo(this);
 
         BuildCityButtons();
     }
 
     private void OnDisable()
     {
-        CancelAndDisposeRequestCts();
-
         if (_cts != null)
         {
             _cts.Cancel();
@@ -69,7 +74,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
             if (label != null) label.text = city.DisplayName;
 
             var capturedCity = city;
-            button.onClick.AddListener(() => SelectCityAsync(capturedCity).Forget());
+            button.onClick.AddListener(() => _forecastViewModel.SelectCityAsync(capturedCity, _cts.Token).Forget());
         }
     }
 
@@ -86,41 +91,6 @@ public sealed class WeatherForecastUI : MonoBehaviour
         {
             Destroy(buttonContainer.GetChild(i).gameObject);
         }
-    }
-
-    private async UniTaskVoid SelectCityAsync(WeatherForecastConfig.CityConfig city)
-    {
-        if (_forecastViewModel == null || _cts == null || _isLoading) return;
-
-        _isLoading = true;
-        SetButtonsInteractable(false);
-
-        // if there is an ongoing request, cancel it before starting a new one.
-        CancelAndDisposeRequestCts();
-        _requestCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
-
-        try
-        {
-            // unitask の await で、キャンセルトークンを渡すことで、リクエストがキャンセルされたときに OperationCanceledException がスローされる
-            await _forecastViewModel.SelectCity(city, _requestCts.Token);
-        }
-        catch (System.OperationCanceledException)
-        {
-            // Ignore cancellation caused by lifecycle stop (OnDisable).
-        }
-        finally
-        {
-            _isLoading = false;
-            CancelAndDisposeRequestCts();
-            SetButtonsInteractable(true);
-        }
-    }
-
-    private void CancelAndDisposeRequestCts()
-    {
-        _requestCts?.Cancel();
-        _requestCts?.Dispose();
-        _requestCts = null;
     }
 
     private void SetButtonsInteractable(bool interactable)
