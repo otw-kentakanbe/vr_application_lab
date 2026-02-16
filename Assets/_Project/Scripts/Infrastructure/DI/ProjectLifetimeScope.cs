@@ -104,7 +104,11 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterWeatherView(IContainerBuilder builder)
     {
-        if (_weatherForecastUI == null) return;
+        if (_weatherForecastUI == null)
+        {
+            Debug.LogWarning($"{LogPrefix} WeatherForecastUI is not assigned. Weather view flow will be disabled.", this);
+            return;
+        }
         builder.RegisterComponent(_weatherForecastUI);
     }
 
