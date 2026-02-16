@@ -110,7 +110,6 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterWeatherConfig(IContainerBuilder builder)
     {
-        if (_weatherForecastConfig == null) return;
         builder.RegisterInstance(_weatherForecastConfig);
     }
 
