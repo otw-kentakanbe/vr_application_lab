@@ -3,18 +3,21 @@ using UnityEngine;
 using VContainer;
 
 /**
-* AppStateHolder から AppState を取得、操作（トグルボタン）に応じて状態を更新、状態変化を伝えるクラス
-* - 状態管理と UI/エフェクトの更新を連携
+* PowerStatePresenter クラス
+* - AppStateHolder から状態を取得し、IPowerStateOutput を通じて状態変化を通知する
+* - IPowerToggleInput のイベントを購読して、状態の切り替えを行う
+* - IPowerStateOutput の RenderPowerState を呼び出して、UI やエフェクトの更新を行う
 */
 public sealed class PowerStatePresenter : MonoBehaviour
 {
     [Inject] private AppStateHolder _holder;
     [Inject] private IPowerToggleInput _powerToggleInput;
     [Inject] private IPowerStateOutput _powerStateOutput;
+    [Inject] private PowerToggleClickedView _powerToggleClickedView;
 
     private void Start()
     {
-        if (_holder == null || _powerToggleInput == null || _powerStateOutput == null)
+        if (_holder == null || _powerToggleInput == null || _powerStateOutput == null || _powerToggleClickedView == null)
         {
             Debug.LogError("[PowerStatePresenter] Dependencies are not injected.", this);
             enabled = false;
@@ -36,6 +39,9 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
     private void OnToggleRequested()
     {
+        // play the toggle click effect.(DoTween)
+        _powerToggleClickedView.Play();
+        // swith the power state,
         _holder.State.ReactivePowerOn.Value = !_holder.State.ReactivePowerOn.Value;
     }
 }

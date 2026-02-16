@@ -36,6 +36,15 @@ public sealed class ProjectLifetimeScope : LifetimeScope
         if (powerToggleInteractor != null)
         {
             builder.RegisterComponent(powerToggleInteractor).As<IPowerToggleInput>();
+            builder.Register(_ =>
+                // PowerToggleInteractor の transform を受け取って、クリックエフェクトを再生する
+                new PowerToggleClickedView(
+                    powerToggleInteractor.InteractorTransform,
+                    new Vector3(4f, 0f, 0f),
+                    0.5f,
+                    1,
+                    3.0f),
+                Lifetime.Singleton);
         }
         if (powerStatePresenter != null) builder.RegisterComponent(powerStatePresenter);
         if (weatherForecastUI != null) builder.RegisterComponent(weatherForecastUI);
