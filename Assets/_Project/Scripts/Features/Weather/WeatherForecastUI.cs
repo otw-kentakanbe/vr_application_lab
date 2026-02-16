@@ -22,6 +22,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
+    private bool _isInitialized;
     [Inject] private WeatherForecastViewModel _forecastViewModel;
 
     private void Start()
@@ -32,8 +33,6 @@ public sealed class WeatherForecastUI : MonoBehaviour
             enabled = false;
             return;
         }
-
-        _cts = new CancellationTokenSource();
 
         // ViewModel の ReactiveDisplayText を監視して、UI の outputText に反映する
         // ReactiveProperty を Subscribe して、値が変わるたびに outputText.text を更新する
@@ -46,7 +45,26 @@ public sealed class WeatherForecastUI : MonoBehaviour
             .Subscribe(isLoading => SetButtonsInteractable(!isLoading))
             .AddTo(this);
 
+        _isInitialized = true;
+        EnsureActiveUiLifecycle();
+    }
+
+    // 再有効化時を考慮して、UI ライフサイクルを管理するための共通処理
+    private void OnEnable()
+    {
+        // when starting, _isInitialized is false, so skip EnsureActiveUiLifecycle to avoid unnecessary initialization.
+        if (!_isInitialized) return;
+
+        EnsureActiveUiLifecycle();
+    }
+
+    // _cts 再生成、ボタン再構築、isLoading に応じた interactable 同期を行う共通処理
+    private void EnsureActiveUiLifecycle()
+    {
+        _cts ??= new CancellationTokenSource();
         BuildCityButtons();
+        // prevent from clicking buttons while loading data.
+        SetButtonsInteractable(!_forecastViewModel.ReactiveIsLoading.Value);
     }
 
     private void OnDisable()
@@ -74,7 +92,12 @@ public sealed class WeatherForecastUI : MonoBehaviour
             if (label != null) label.text = city.DisplayName;
 
             var capturedCity = city;
-            button.onClick.AddListener(() => _forecastViewModel.SelectCityAsync(capturedCity, _cts.Token).Forget());
+            button.onClick.AddListener(() =>
+            {
+                // if _cts is null, it means the UI is not active, so ignore the click.
+                if (_cts == null) return;
+                _forecastViewModel.SelectCityAsync(capturedCity, _cts.Token).Forget();
+            });
         }
     }
 
