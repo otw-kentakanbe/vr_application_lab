@@ -432,7 +432,7 @@ GameObject:
   - component: {fileID: 419150934}
   - component: {fileID: 419150933}
   m_Layer: 0
-  m_Name: AppStatePresenter
+  m_Name: PowerStatePresenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -449,7 +449,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20f70369898b641afb06a7c6c76fb7b9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AppStatePresenter
+  m_EditorClassIdentifier: Assembly-CSharp::PowerStatePresenter
   holder: {fileID: 1945497405}
   toggleView: {fileID: 1647894289}
   postProcessView: {fileID: 1945497406}
@@ -530,7 +530,7 @@ MonoBehaviour:
   appStateHolder: {fileID: 1945497405}
   powerStateEffectsController: {fileID: 1945497406}
   powerToggleInteractor: {fileID: 1647894289}
-  appStatePresenter: {fileID: 419150933}
+  powerStatePresenter: {fileID: 419150933}
   weatherForecastUI: {fileID: 2070916321}
   weatherForecastConfig: {fileID: 11400000, guid: 3428a8d282b9f4e749c2900d0bfab769, type: 2}
 --- !u!4 &605943105

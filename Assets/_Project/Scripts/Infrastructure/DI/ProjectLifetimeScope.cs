@@ -12,7 +12,7 @@ public sealed class ProjectLifetimeScope : LifetimeScope
     [SerializeField] private AppStateHolder appStateHolder;
     [SerializeField] private PowerStateEffectsController powerStateEffectsController;
     [SerializeField] private PowerToggleInteractor powerToggleInteractor;
-    [SerializeField] private AppStatePresenter appStatePresenter;
+    [SerializeField] private PowerStatePresenter powerStatePresenter;
     [SerializeField] private WeatherForecastUI weatherForecastUI;
     [SerializeField] private WeatherForecastConfig weatherForecastConfig;
 
@@ -28,7 +28,7 @@ public sealed class ProjectLifetimeScope : LifetimeScope
         if (appStateHolder != null) builder.RegisterComponent(appStateHolder);
         if (powerStateEffectsController != null) builder.RegisterComponent(powerStateEffectsController);
         if (powerToggleInteractor != null) builder.RegisterComponent(powerToggleInteractor);
-        if (appStatePresenter != null) builder.RegisterComponent(appStatePresenter);
+        if (powerStatePresenter != null) builder.RegisterComponent(powerStatePresenter);
         if (weatherForecastUI != null) builder.RegisterComponent(weatherForecastUI);
         if (weatherForecastConfig != null) builder.RegisterInstance(weatherForecastConfig);
     }

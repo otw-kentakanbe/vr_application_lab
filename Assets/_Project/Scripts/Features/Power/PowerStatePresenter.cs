@@ -6,7 +6,7 @@ using VContainer;
 * AppStateHolder から AppState を取得、操作（トグルボタン）に応じて状態を更新、状態変化を伝えるクラス
 * - 状態管理と UI/エフェクトの更新を連携
 */
-public sealed class AppStatePresenter : MonoBehaviour
+public sealed class PowerStatePresenter : MonoBehaviour
 {
     [Inject] private AppStateHolder _holder;
     [Inject] private PowerToggleInteractor _toggleInteractor;
@@ -16,7 +16,7 @@ public sealed class AppStatePresenter : MonoBehaviour
     {
         if (_holder == null || _toggleInteractor == null || _stateEffectController == null)
         {
-            Debug.LogError("[AppStatePresenter] Dependencies are not injected.", this);
+            Debug.LogError("[PowerStatePresenter] Dependencies are not injected.", this);
             enabled = false;
             return;
         }

@@ -7,7 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 /**
 * PowerToggleInteractor クラス
 * - タッチを検知し、下記の処理を行う
-*.  - AppStatePresenter から ToggleRequested イベントを受け取って状態を更新
+*.  - PowerStatePresenter から ToggleRequested イベントを受け取って状態を更新
 *.  - Animation(DoTween)を再生
 */
 public sealed class PowerToggleInteractor : MonoBehaviour
@@ -58,7 +58,7 @@ public sealed class PowerToggleInteractor : MonoBehaviour
         if (Time.time - _lastFireTime < cooldownSeconds) return;
         _lastFireTime = Time.time;
 
-        // AppStatePresenter に状態変化を伝えるイベントを発火
+        // PowerStatePresenter に状態変化を伝えるイベントを発火
         ToggleRequested?.Invoke();
 
         // DoTween.
