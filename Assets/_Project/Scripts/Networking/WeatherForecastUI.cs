@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using R3;
+using VContainer;
 
 public sealed class WeatherForecastUI : MonoBehaviour
 {
@@ -13,20 +14,17 @@ public sealed class WeatherForecastUI : MonoBehaviour
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private Button buttonPrefab;
 
-    [Header("Config")]
-    [SerializeField] private WeatherForecastConfig config;
-
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
     private CancellationTokenSource _requestCts;
-    private WeatherForecastViewModel _viewModel;
+    [Inject] private WeatherForecastViewModel _viewModel;
     private bool _isLoading;
 
     private void Start()
     {
-        if (outputText == null || config == null || buttonContainer == null || buttonPrefab == null)
+        if (outputText == null || buttonContainer == null || buttonPrefab == null || _viewModel == null)
         {
-            Debug.LogError("[WeatherForecastUI] UI or config references are not assigned.", this);
+            Debug.LogError("[WeatherForecastUI] UI references or dependencies are not assigned.", this);
             enabled = false;
             return;
         }
@@ -37,7 +35,6 @@ public sealed class WeatherForecastUI : MonoBehaviour
         // - Model: FetchCityAsync の戻り値（文字列）を返すだけ
         // - ViewModel: DisplayText.Value = ... を更新
         // - View: Subscribe で受け取り outputText.text を更新
-        _viewModel = new WeatherForecastViewModel(config);
         _viewModel.DisplayText
             .Subscribe(text => outputText.text = text)
             .AddTo(this);
@@ -57,11 +54,6 @@ public sealed class WeatherForecastUI : MonoBehaviour
         }
 
         CleanupButtons();
-        if (_viewModel != null)
-        {
-            _viewModel.Dispose();
-            _viewModel = null;
-        }
     }
 
     private void BuildCityButtons()

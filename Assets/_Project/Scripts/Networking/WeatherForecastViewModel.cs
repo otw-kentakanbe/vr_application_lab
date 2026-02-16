@@ -8,9 +8,9 @@ public sealed class WeatherForecastViewModel : IDisposable
 {
     private readonly WeatherForecastModel _model;
 
-    public WeatherForecastViewModel(WeatherForecastConfig config)
+    public WeatherForecastViewModel(WeatherForecastModel model, WeatherForecastConfig config)
     {
-        _model = new WeatherForecastModel(config.BaseUrl, config.CacheTtlSeconds);
+        _model = model;
         Cities = config.Cities;
         DisplayText = new ReactiveProperty<string>("Ready");
     }

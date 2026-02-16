@@ -531,6 +531,8 @@ MonoBehaviour:
   postProcessStateBinder: {fileID: 1945497406}
   touchToggleButton: {fileID: 1647894289}
   appStatePresenter: {fileID: 419150933}
+  weatherForecastUI: {fileID: 2070916321}
+  weatherForecastConfig: {fileID: 11400000, guid: 3428a8d282b9f4e749c2900d0bfab769, type: 2}
 --- !u!4 &605943105
 Transform:
   m_ObjectHideFlags: 0
