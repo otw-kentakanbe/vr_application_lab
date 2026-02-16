@@ -29,26 +29,10 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private void Start()
     {
-        if (outputText == null || buttonContainer == null || buttonPrefab == null || _forecastViewModel == null)
-        {
-            Debug.LogError($"{LogPrefix} UI references or dependencies are not assigned.", this);
-            enabled = false;
-            return;
-        }
+        if (!ValidateDependencies()) return;
 
-        // ViewModel の ReactiveDisplayText を監視して、UI の outputText に反映する
-        // ReactiveProperty を Subscribe して、値が変わるたびに outputText.text を更新する
-        // * text は、_forecastViewModel.ReactiveDisplayText（ReactiveProperty<string>）から流れてくる現在値/更新値
-        // AddTo(this) を呼ぶことで、この MonoBehaviour が破棄されるときに自動的に購読解除される
-        _forecastViewModel.ReactiveDisplayText
-            .Subscribe(text => outputText.text = text)
-            .AddTo(this);
-        _forecastViewModel.ReactiveIsLoading
-            .Subscribe(isLoading => SetButtonsInteractable(!isLoading))
-            .AddTo(this);
-
-        _isInitialized = true;
-        EnsureActiveUiLifecycle();
+        BindViewModel();
+        InitializeUiLifecycle();
     }
 
     // 再有効化時を考慮して、UI ライフサイクルを管理するための共通処理
@@ -131,6 +115,38 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
             button.interactable = interactable;
         }
+    }
+
+    private bool ValidateDependencies()
+    {
+        if (outputText != null && buttonContainer != null && buttonPrefab != null && _forecastViewModel != null)
+        {
+            return true;
+        }
+
+        Debug.LogError($"{LogPrefix} UI references or dependencies are not assigned.", this);
+        enabled = false;
+        return false;
+    }
+
+    private void BindViewModel()
+    {
+        // ViewModel の ReactiveDisplayText を監視して、UI の outputText に反映する
+        // ReactiveProperty を Subscribe して、値が変わるたびに outputText.text を更新する
+        // * text は、_forecastViewModel.ReactiveDisplayText（ReactiveProperty<string>）から流れてくる現在値/更新値
+        // AddTo(this) を呼ぶことで、この MonoBehaviour が破棄されるときに自動的に購読解除される
+        _forecastViewModel.ReactiveDisplayText
+            .Subscribe(latestText => outputText.text = latestText)
+            .AddTo(this);
+        _forecastViewModel.ReactiveIsLoading
+            .Subscribe(isLoading => SetButtonsInteractable(!isLoading))
+            .AddTo(this);
+    }
+
+    private void InitializeUiLifecycle()
+    {
+        _isInitialized = true;
+        EnsureActiveUiLifecycle();
     }
 
 }
