@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -25,12 +26,15 @@ public sealed class WeatherForecastUI : MonoBehaviour
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
     private bool _isInitialized;
+    private IDisposable _displayTextSubscription;
+    private IDisposable _isLoadingSubscription;
     [Inject] private WeatherForecastViewModel _forecastViewModel;
 
     private void Start()
     {
         if (!ValidateDependencies()) return;
 
+        _isInitialized = true;
         BindViewModel();
         InitializeUiLifecycle();
     }
@@ -41,6 +45,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
         // when starting, _isInitialized is false, so skip EnsureActiveUiLifecycle to avoid unnecessary initialization.
         if (!_isInitialized) return;
 
+        BindViewModel();
         EnsureActiveUiLifecycle();
     }
 
@@ -55,6 +60,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private void OnDisable()
     {
+        UnbindViewModel();
         CancelAndDisposeCts();
         CleanupButtons();
     }
@@ -124,21 +130,21 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private void BindViewModel()
     {
-        // ViewModel の ReactiveDisplayText を監視して、UI の outputText に反映する
-        // ReactiveProperty を Subscribe して、値が変わるたびに outputText.text を更新する
-        // * text は、_forecastViewModel.ReactiveDisplayText（ReactiveProperty<string>）から流れてくる現在値/更新値
-        // AddTo(this) を呼ぶことで、この MonoBehaviour が破棄されるときに自動的に購読解除される
-        _forecastViewModel.ReactiveDisplayText
-            .Subscribe(latestText => _outputText.text = latestText)
-            .AddTo(this);
-        _forecastViewModel.ReactiveIsLoading
-            .Subscribe(isLoading => SetButtonsInteractable(!isLoading))
-            .AddTo(this);
+        if (_displayTextSubscription == null)
+        {
+            _displayTextSubscription = _forecastViewModel.ReactiveDisplayText
+                .Subscribe(latestText => _outputText.text = latestText);
+        }
+
+        if (_isLoadingSubscription == null)
+        {
+            _isLoadingSubscription = _forecastViewModel.ReactiveIsLoading
+                .Subscribe(isLoading => SetButtonsInteractable(!isLoading));
+        }
     }
 
     private void InitializeUiLifecycle()
     {
-        _isInitialized = true;
         EnsureActiveUiLifecycle();
     }
 
@@ -149,6 +155,15 @@ public sealed class WeatherForecastUI : MonoBehaviour
         _cts.Cancel();
         _cts.Dispose();
         _cts = null;
+    }
+
+    private void UnbindViewModel()
+    {
+        _displayTextSubscription?.Dispose();
+        _displayTextSubscription = null;
+
+        _isLoadingSubscription?.Dispose();
+        _isLoadingSubscription = null;
     }
 
 }
