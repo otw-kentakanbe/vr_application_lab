@@ -4,9 +4,13 @@ using DG.Tweening;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-// XRI の XRSimpleInteractable の Hover Enter をトリガーに PowerOn をトグルする
-// クールダウンで連打防止し、DOTween でボタンの押下感アニメーションを再生
-public sealed class TouchToggleButton : MonoBehaviour
+/**
+* PowerToggleInteractor クラス
+* - タッチを検知し、下記の処理を行う
+*.  - AppStatePresenter から ToggleRequested イベントを受け取って状態を更新
+*.  - Animation(DoTween)を再生
+*/
+public sealed class PowerToggleInteractor : MonoBehaviour
 {
     public event Action ToggleRequested;
 
@@ -32,7 +36,7 @@ public sealed class TouchToggleButton : MonoBehaviour
     {
         if (interactable == null)
         {
-            Debug.LogError("[TouchToggleButton] XRSimpleInteractable is not assigned.", this);
+            Debug.LogError("[PowerToggleInteractor] XRSimpleInteractable is not assigned.", this);
             enabled = false;
             return;
         }
@@ -50,13 +54,16 @@ public sealed class TouchToggleButton : MonoBehaviour
 
     private void OnHoverEntered(HoverEnterEventArgs _)
     {
+        // debounce.
         if (Time.time - _lastFireTime < cooldownSeconds) return;
         _lastFireTime = Time.time;
 
+        // AppStatePresenter に状態変化を伝えるイベントを発火
         ToggleRequested?.Invoke();
 
-        // << DoTween >>
-        // 押した感（軽く・短く）
+        // DoTween.
+        // dokill: 既に再生中の同一プロパティのアニメーションがあれば、それを停止してから新しいアニメーションを開始する
+        // dojump: 対象 Transform を指定した位置にジャンプさせるアニメーションを再生する
         buttonVisual.DOKill();
         buttonVisual.DOJump(new Vector3(4, 0, 0), 0.5f, 1, 3.0f);
     }

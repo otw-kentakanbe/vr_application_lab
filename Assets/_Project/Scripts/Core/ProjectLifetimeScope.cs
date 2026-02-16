@@ -10,8 +10,8 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 {
     [Header("Scene References")]
     [SerializeField] private AppStateHolder appStateHolder;
-    [SerializeField] private PostProcessStateBinder postProcessStateBinder;
-    [SerializeField] private TouchToggleButton touchToggleButton;
+    [SerializeField] private PowerStateEffectsController powerStateEffectsController;
+    [SerializeField] private PowerToggleInteractor powerToggleInteractor;
     [SerializeField] private AppStatePresenter appStatePresenter;
     [SerializeField] private WeatherForecastUI weatherForecastUI;
     [SerializeField] private WeatherForecastConfig weatherForecastConfig;
@@ -26,8 +26,8 @@ public sealed class ProjectLifetimeScope : LifetimeScope
     private void RegisterSceneComponents(IContainerBuilder builder)
     {
         if (appStateHolder != null) builder.RegisterComponent(appStateHolder);
-        if (postProcessStateBinder != null) builder.RegisterComponent(postProcessStateBinder);
-        if (touchToggleButton != null) builder.RegisterComponent(touchToggleButton);
+        if (powerStateEffectsController != null) builder.RegisterComponent(powerStateEffectsController);
+        if (powerToggleInteractor != null) builder.RegisterComponent(powerToggleInteractor);
         if (appStatePresenter != null) builder.RegisterComponent(appStatePresenter);
         if (weatherForecastUI != null) builder.RegisterComponent(weatherForecastUI);
         if (weatherForecastConfig != null) builder.RegisterInstance(weatherForecastConfig);

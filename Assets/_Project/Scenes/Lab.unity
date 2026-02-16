@@ -528,8 +528,8 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects: []
   appStateHolder: {fileID: 1945497405}
-  postProcessStateBinder: {fileID: 1945497406}
-  touchToggleButton: {fileID: 1647894289}
+  powerStateEffectsController: {fileID: 1945497406}
+  powerToggleInteractor: {fileID: 1647894289}
   appStatePresenter: {fileID: 419150933}
   weatherForecastUI: {fileID: 2070916321}
   weatherForecastConfig: {fileID: 11400000, guid: 3428a8d282b9f4e749c2900d0bfab769, type: 2}
@@ -1593,7 +1593,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95123c9c442245e41a2d75cba7236956, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TouchToggleButton
+  m_EditorClassIdentifier: Assembly-CSharp::PowerToggleInteractor
   interactable: {fileID: 1647894287}
   buttonVisual: {fileID: 1647894288}
   cooldownSeconds: 0.25
@@ -1722,7 +1722,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 123c0fe75afbff443bdb3d38664bf601, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PostProcessStateBinder
+  m_EditorClassIdentifier: Assembly-CSharp::PowerStateEffectsController
   globalVolume: {fileID: 832575518}
   bloomOn: 50
   bloomOff: 0.2

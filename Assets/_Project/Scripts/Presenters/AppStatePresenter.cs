@@ -9,29 +9,29 @@ using VContainer;
 public sealed class AppStatePresenter : MonoBehaviour
 {
     [Inject] private AppStateHolder _holder;
-    [Inject] private TouchToggleButton _toggleView;
-    [Inject] private PostProcessStateBinder _postProcessView;
+    [Inject] private PowerToggleInteractor _toggleInteractor;
+    [Inject] private PowerStateEffectsController _stateEffectController;
 
     private void Start()
     {
-        if (_holder == null || _toggleView == null || _postProcessView == null)
+        if (_holder == null || _toggleInteractor == null || _stateEffectController == null)
         {
             Debug.LogError("[AppStatePresenter] Dependencies are not injected.", this);
             enabled = false;
             return;
         }
 
-        _toggleView.ToggleRequested += OnToggleRequested;
+        _toggleInteractor.ToggleRequested += OnToggleRequested;
         _holder.State.PowerOn
-            .Subscribe(isOn => _postProcessView.ApplyPowerState(isOn))
+            .Subscribe(isOn => _stateEffectController.ApplyPowerState(isOn))
             .AddTo(this);
-        _postProcessView.ApplyPowerState(_holder.State.PowerOn.Value);
+        _stateEffectController.ApplyPowerState(_holder.State.PowerOn.Value);
     }
 
     private void OnDestroy()
     {
         // イベントの購読解除を行わないと、オブジェクトが破棄された後もイベントが発火し、NullReferenceException が発生する可能性がある
-        if (_toggleView != null) _toggleView.ToggleRequested -= OnToggleRequested;
+        if (_toggleInteractor != null) _toggleInteractor.ToggleRequested -= OnToggleRequested;
     }
 
     private void OnToggleRequested()
