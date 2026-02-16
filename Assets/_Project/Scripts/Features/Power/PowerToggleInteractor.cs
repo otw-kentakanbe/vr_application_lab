@@ -12,6 +12,8 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 {
     private const string LogPrefix = "[PowerToggleInteractor]";
+    private const float DefaultCooldownSeconds = 0.25f;
+    private const float DefaultLastFireTime = -999f;
 
     public event Action ToggleRequested;
     public Transform InteractorTransform => interactorVisual;
@@ -23,9 +25,9 @@ public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 
     [Header("Debounce")]
     [Tooltip("Hover Enter Spam Prevention Cooldown (seconds)")]
-    [SerializeField] private float cooldownSeconds = 0.25f;
+    [SerializeField] private float cooldownSeconds = DefaultCooldownSeconds;
 
-    private float _lastFireTime = -999f;
+    private float _lastFireTime = DefaultLastFireTime;
 
     private void Reset()
     {

@@ -27,6 +27,7 @@ public sealed class Hourly
 public sealed class WeatherForecastModel
 {
     private const int DefaultCacheTtlSeconds = 60 * 60;
+    private const string NoDataText = "No data.";
 
     private readonly string _baseUrl;
     private readonly int _cacheTtlSeconds;
@@ -73,7 +74,7 @@ public sealed class WeatherForecastModel
         if (data?.hourly?.time == null || data.hourly.temperature_2m == null ||
             data.hourly.time.Length == 0 || data.hourly.temperature_2m.Length == 0)
         {
-            return $"{city}\nNo data.";
+            return $"{city}\n{NoDataText}";
         }
 
         var time = data.hourly.time[0];

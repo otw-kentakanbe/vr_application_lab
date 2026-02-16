@@ -13,6 +13,8 @@ using UnityEngine;
 public sealed class WeatherForecastViewModel : IDisposable
 {
     private const string LogPrefix = "[WeatherForecastViewModel]";
+    private const string DefaultReadyText = "Ready";
+    private const string UnexpectedErrorText = "Unexpected Error.";
 
     private readonly WeatherForecastModel _model;
     private CancellationTokenSource _requestCts;
@@ -21,7 +23,7 @@ public sealed class WeatherForecastViewModel : IDisposable
     {
         _model = model;
         Cities = config.Cities;
-        ReactiveDisplayText = new ReactiveProperty<string>("Ready");
+        ReactiveDisplayText = new ReactiveProperty<string>(DefaultReadyText);
         ReactiveIsLoading = new ReactiveProperty<bool>(false);
     }
 
@@ -49,7 +51,7 @@ public sealed class WeatherForecastViewModel : IDisposable
         {
             Debug.LogError($"{LogPrefix} Unexpected exception while fetching weather.");
             Debug.LogException(ex);
-            ReactiveDisplayText.Value = "Unexpected Error.";
+            ReactiveDisplayText.Value = UnexpectedErrorText;
         }
         finally
         {

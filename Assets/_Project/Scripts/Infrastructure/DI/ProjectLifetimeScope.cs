@@ -8,6 +8,11 @@ using VContainer.Unity;
 [DefaultExecutionOrder(-10000)]
 public sealed class ProjectLifetimeScope : LifetimeScope
 {
+    private static readonly Vector3 ToggleClickJumpEndPosition = new(4f, 0f, 0f);
+    private const float ToggleClickJumpPower = 0.5f;
+    private const int ToggleClickJumpCount = 1;
+    private const float ToggleClickJumpDurationSeconds = 3.0f;
+
     [Header("Scene References")]
     [SerializeField] private AppStateHolder appStateHolder;
     [SerializeField] private PowerStateEffectsController powerStateEffectsController;
@@ -45,10 +50,10 @@ public sealed class ProjectLifetimeScope : LifetimeScope
                 // PowerToggleInteractor の transform を受け取って、クリックエフェクトを再生する
                 new PowerToggleClickedView(
                     powerToggleInteractor.InteractorTransform,
-                    new Vector3(4f, 0f, 0f),
-                    0.5f,
-                    1,
-                    3.0f),
+                    ToggleClickJumpEndPosition,
+                    ToggleClickJumpPower,
+                    ToggleClickJumpCount,
+                    ToggleClickJumpDurationSeconds),
                 Lifetime.Singleton);
         }
 
