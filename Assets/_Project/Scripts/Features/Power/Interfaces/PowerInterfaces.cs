@@ -1,7 +1,7 @@
 using System;
 
 /**
-* PowerFeature インターフェースクラス
+* PowerFeature Interface クラス
 */
 public interface IPowerToggleInput
 {
@@ -9,7 +9,7 @@ public interface IPowerToggleInput
 }
 
 /**
-* PowerFeature インターフェースクラス
+* PowerFeature Interface クラス
 */
 public interface IPowerStateOutput
 {
