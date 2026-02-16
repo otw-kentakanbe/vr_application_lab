@@ -34,6 +34,8 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
 
         BindVolumeOverrides(profile);
         InitializeOverrides();
+        ValidateBloomSettings();
+        ValidateVignetteSettings();
     }
 
     private bool ValidateReferences(out VolumeProfile profile)
@@ -87,5 +89,35 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
     {
         if (_vignette == null) return;
         _vignette.intensity.value = isOn ? _vignetteOn : _vignetteOff;
+    }
+
+    private void ValidateBloomSettings()
+    {
+        if (_bloom == null) return;
+
+        if (!_bloom.active)
+        {
+            Debug.LogWarning($"{LogPrefix} Bloom is inactive in the Volume profile. Visual changes may not be applied.", this);
+        }
+
+        if (!_bloom.intensity.overrideState)
+        {
+            Debug.LogWarning($"{LogPrefix} Bloom intensity override is disabled. Visual changes may not be applied.", this);
+        }
+    }
+
+    private void ValidateVignetteSettings()
+    {
+        if (_vignette == null) return;
+
+        if (!_vignette.active)
+        {
+            Debug.LogWarning($"{LogPrefix} Vignette is inactive in the Volume profile. Visual changes may not be applied.", this);
+        }
+
+        if (!_vignette.intensity.overrideState)
+        {
+            Debug.LogWarning($"{LogPrefix} Vignette intensity override is disabled. Visual changes may not be applied.", this);
+        }
     }
 }
