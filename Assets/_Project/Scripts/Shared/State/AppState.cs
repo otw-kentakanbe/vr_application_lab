@@ -8,5 +8,6 @@ using R3;
 /// </summary>
 public sealed class AppState
 {
+    // TODO: 現在は Power 状態のみを保持するが、将来的に App 全体の状態を集約する想定
     public ReactiveProperty<bool> ReactivePowerOn { get; } = new(false);
 }
