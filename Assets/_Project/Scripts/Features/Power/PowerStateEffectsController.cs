@@ -8,7 +8,7 @@ using UnityEngine.Rendering.Universal;
 * - PowerStatePresenter から状態変化を受けて、Bloom や Vignette などのエフェクトの強さを切り替える
 * - UnityEvent を用いて、状態変化に応じた追加の処理を外部から設定できるようにする
 */
-public sealed class PowerStateEffectsController : MonoBehaviour
+public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutput
 {
     [Header("References")]
     [SerializeField] private Volume globalVolume;
@@ -49,7 +49,7 @@ public sealed class PowerStateEffectsController : MonoBehaviour
         if (_vignette == null) Debug.LogWarning("[PowerStateEffectsController] Vignette override not found in Volume profile.", this);
     }
 
-    public void ApplyPowerState(bool isOn)
+    public void RenderPowerState(bool isOn)
     {
         // post-processing process.
         if (_bloom != null) _bloom.intensity.value = isOn ? bloomOn : bloomOff;

@@ -9,29 +9,29 @@ using VContainer;
 public sealed class PowerStatePresenter : MonoBehaviour
 {
     [Inject] private AppStateHolder _holder;
-    [Inject] private PowerToggleInteractor _toggleInteractor;
-    [Inject] private PowerStateEffectsController _stateEffectController;
+    [Inject] private IPowerToggleInput _powerToggleInput;
+    [Inject] private IPowerStateOutput _powerStateOutput;
 
     private void Start()
     {
-        if (_holder == null || _toggleInteractor == null || _stateEffectController == null)
+        if (_holder == null || _powerToggleInput == null || _powerStateOutput == null)
         {
             Debug.LogError("[PowerStatePresenter] Dependencies are not injected.", this);
             enabled = false;
             return;
         }
 
-        _toggleInteractor.ToggleRequested += OnToggleRequested;
+        _powerToggleInput.ToggleRequested += OnToggleRequested;
         _holder.State.ReactivePowerOn
-            .Subscribe(isOn => _stateEffectController.ApplyPowerState(isOn))
+            .Subscribe(isOn => _powerStateOutput.RenderPowerState(isOn))
             .AddTo(this);
-        _stateEffectController.ApplyPowerState(_holder.State.ReactivePowerOn.Value);
+        _powerStateOutput.RenderPowerState(_holder.State.ReactivePowerOn.Value);
     }
 
     private void OnDestroy()
     {
         // イベントの購読解除を行わないと、オブジェクトが破棄された後もイベントが発火し、NullReferenceException が発生する可能性がある
-        if (_toggleInteractor != null) _toggleInteractor.ToggleRequested -= OnToggleRequested;
+        if (_powerToggleInput != null) _powerToggleInput.ToggleRequested -= OnToggleRequested;
     }
 
     private void OnToggleRequested()

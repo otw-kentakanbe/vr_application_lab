@@ -10,7 +10,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 *.  - PowerStatePresenter から ToggleRequested イベントを受け取って状態を更新
 *.  - Animation(DoTween)を再生
 */
-public sealed class PowerToggleInteractor : MonoBehaviour
+public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 {
     public event Action ToggleRequested;
 

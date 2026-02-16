@@ -26,8 +26,17 @@ public sealed class ProjectLifetimeScope : LifetimeScope
     private void RegisterSceneComponents(IContainerBuilder builder)
     {
         if (appStateHolder != null) builder.RegisterComponent(appStateHolder);
-        if (powerStateEffectsController != null) builder.RegisterComponent(powerStateEffectsController);
-        if (powerToggleInteractor != null) builder.RegisterComponent(powerToggleInteractor);
+        if (powerStateEffectsController != null)
+        {
+            // IPowerStateOutput インターフェースとして登録することで、PowerStateEffectsController を直接参照せずに、IPowerStateOutput として依存注入できるようになる
+            // 直接参照しないことで、PowerStateEffectsController を別の実装に差し替えやすくなり、柔軟性が向上する
+            // 例えば、テスト用のモック実装を作成して、IPowerStateOutput として登録すれば、PowerStatePresenter のテストが容易になる
+            builder.RegisterComponent(powerStateEffectsController).As<IPowerStateOutput>();
+        }
+        if (powerToggleInteractor != null)
+        {
+            builder.RegisterComponent(powerToggleInteractor).As<IPowerToggleInput>();
+        }
         if (powerStatePresenter != null) builder.RegisterComponent(powerStatePresenter);
         if (weatherForecastUI != null) builder.RegisterComponent(weatherForecastUI);
         if (weatherForecastConfig != null) builder.RegisterInstance(weatherForecastConfig);
