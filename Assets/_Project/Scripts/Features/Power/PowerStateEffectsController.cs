@@ -30,22 +30,35 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
 
     private void Awake()
     {
+        if (!TryGetVolumeProfile(out var profile)) return;
+
+        CacheVolumeOverrides(profile);
+    }
+
+    private bool TryGetVolumeProfile(out VolumeProfile profile)
+    {
+        profile = null;
+
         if (globalVolume == null)
         {
             Debug.LogError($"{LogPrefix} Global Volume is not assigned.", this);
             enabled = false;
-            return;
+            return false;
         }
 
-        if (globalVolume.profile == null)
-        {
-            Debug.LogError($"{LogPrefix} Volume profile is missing.", this);
-            enabled = false;
-            return;
-        }
+        profile = globalVolume.profile;
+        if (profile != null) return true;
 
-        globalVolume.profile.TryGet(out _bloom);
-        globalVolume.profile.TryGet(out _vignette);
+        Debug.LogError($"{LogPrefix} Volume profile is missing.", this);
+        enabled = false;
+        return false;
+    }
+
+    private void CacheVolumeOverrides(VolumeProfile profile)
+    {
+        // set cached overrides, because accessing overrides from Volume Profile every time is costly.
+        profile.TryGet(out _bloom);
+        profile.TryGet(out _vignette);
 
         if (_bloom == null) Debug.LogWarning($"{LogPrefix} Bloom override not found in Volume profile.", this);
         if (_vignette == null) Debug.LogWarning($"{LogPrefix} Vignette override not found in Volume profile.", this);
@@ -53,11 +66,22 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
 
     public void RenderPowerState(bool isOn)
     {
-        // post-processing process.
-        if (_bloom != null) _bloom.intensity.value = isOn ? bloomOn : bloomOff;
-        if (_vignette != null) _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
+        ApplyBloom(isOn);
+        ApplyVignette(isOn);
 
         // UnityEvent process.
         (isOn ? onPowerOn : onPowerOff)?.Invoke();
+    }
+
+    private void ApplyBloom(bool isOn)
+    {
+        if (_bloom == null) return;
+        _bloom.intensity.value = isOn ? bloomOn : bloomOff;
+    }
+
+    private void ApplyVignette(bool isOn)
+    {
+        if (_vignette == null) return;
+        _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
     }
 }

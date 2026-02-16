@@ -30,49 +30,72 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterSharedState(IContainerBuilder builder)
     {
-        if (appStateHolder != null) builder.RegisterComponent(appStateHolder);
+        if (appStateHolder == null) return;
+
+        builder.RegisterComponent(appStateHolder);
     }
 
     private void RegisterPower(IContainerBuilder builder)
     {
-        if (powerStateEffectsController != null)
-        {
-            // IPowerStateOutput インターフェースとして登録することで、PowerStateEffectsController を直接参照せずに、IPowerStateOutput として依存注入できるようになる
-            // 直接参照しないことで、PowerStateEffectsController を別の実装に差し替えやすくなり、柔軟性が向上する
-            // 例えば、テスト用のモック実装を作成して、IPowerStateOutput として登録すれば、PowerStatePresenter のテストが容易になる
-            builder.RegisterComponent(powerStateEffectsController).As<IPowerStateOutput>();
-        }
-
-        if (powerToggleInteractor != null)
-        {
-            builder.RegisterComponent(powerToggleInteractor).As<IPowerToggleInput>();
-            builder.Register(_ =>
-                // PowerToggleInteractor の transform を受け取って、クリックエフェクトを再生する
-                new PowerToggleClickedView(
-                    powerToggleInteractor.InteractorTransform,
-                    ToggleClickJumpEndPosition,
-                    ToggleClickJumpPower,
-                    ToggleClickJumpCount,
-                    ToggleClickJumpDurationSeconds),
-                Lifetime.Singleton);
-        }
-
-        if (powerStatePresenter != null) builder.RegisterComponent(powerStatePresenter);
+        RegisterPowerOutput(builder);
+        RegisterPowerInput(builder);
+        RegisterPowerPresenter(builder);
     }
 
     private void RegisterWeather(IContainerBuilder builder)
     {
-        if (weatherForecastUI != null) builder.RegisterComponent(weatherForecastUI);
-        if (weatherForecastConfig != null) builder.RegisterInstance(weatherForecastConfig);
+        RegisterWeatherView(builder);
+        RegisterWeatherConfig(builder);
 
-        // model: config 注入
         builder.Register(resolver =>
         {
             var config = resolver.Resolve<WeatherForecastConfig>();
             return new WeatherForecastModel(config.BaseUrl, config.CacheTtlSeconds);
         }, Lifetime.Singleton);
 
-        // viewmodel: model + config 注入
         builder.Register<WeatherForecastViewModel>(Lifetime.Singleton);
+    }
+
+    private void RegisterPowerOutput(IContainerBuilder builder)
+    {
+        if (powerStateEffectsController == null) return;
+        // IPowerStateOutput インターフェースとして登録することで、PowerStateEffectsController を直接参照せずに、IPowerStateOutput として依存注入できるようになる
+        // 直接参照しないことで、PowerStateEffectsController を別の実装に差し替えやすくなり、柔軟性が向上する
+        // 例えば、テスト用のモック実装を作成して、IPowerStateOutput として登録すれば、PowerStatePresenter のテストが容易になる
+        builder.RegisterComponent(powerStateEffectsController).As<IPowerStateOutput>();
+    }
+
+    private void RegisterPowerInput(IContainerBuilder builder)
+    {
+        if (powerToggleInteractor == null) return;
+
+        builder.RegisterComponent(powerToggleInteractor).As<IPowerToggleInput>();
+        builder.Register(_ =>
+            // PowerToggleInteractor の transform を受け取って、クリックエフェクトを再生する
+            new PowerToggleClickedView(
+                powerToggleInteractor.InteractorTransform,
+                ToggleClickJumpEndPosition,
+                ToggleClickJumpPower,
+                ToggleClickJumpCount,
+                ToggleClickJumpDurationSeconds),
+            Lifetime.Singleton);
+    }
+
+    private void RegisterPowerPresenter(IContainerBuilder builder)
+    {
+        if (powerStatePresenter == null) return;
+        builder.RegisterComponent(powerStatePresenter);
+    }
+
+    private void RegisterWeatherView(IContainerBuilder builder)
+    {
+        if (weatherForecastUI == null) return;
+        builder.RegisterComponent(weatherForecastUI);
+    }
+
+    private void RegisterWeatherConfig(IContainerBuilder builder)
+    {
+        if (weatherForecastConfig == null) return;
+        builder.RegisterInstance(weatherForecastConfig);
     }
 }

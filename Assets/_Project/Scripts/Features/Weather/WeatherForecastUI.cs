@@ -55,13 +55,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_cts != null)
-        {
-            _cts.Cancel();
-            _cts.Dispose();
-            _cts = null;
-        }
-
+        CancelAndDisposeCts();
         CleanupButtons();
     }
 
@@ -74,9 +68,6 @@ public sealed class WeatherForecastUI : MonoBehaviour
             var button = Instantiate(buttonPrefab, buttonContainer);
             _generatedButtons.Add(button);
 
-            var label = button.GetComponentInChildren<TextMeshProUGUI>();
-            if (label != null) label.text = city.DisplayName;
-
             var capturedCity = city;
             button.onClick.AddListener(() =>
             {
@@ -84,6 +75,11 @@ public sealed class WeatherForecastUI : MonoBehaviour
                 if (_cts == null) return;
                 _forecastViewModel.SelectCityAsync(capturedCity, _cts.Token).Forget();
             });
+
+            var label = button.GetComponentInChildren<TextMeshProUGUI>();
+            if (label == null) continue;
+
+            label.text = city.DisplayName;
         }
     }
 
@@ -116,14 +112,14 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private bool ValidateDependencies()
     {
-        if (outputText != null && buttonContainer != null && buttonPrefab != null && _forecastViewModel != null)
+        if (outputText == null || buttonContainer == null || buttonPrefab == null || _forecastViewModel == null)
         {
-            return true;
+            Debug.LogError($"{LogPrefix} UI references or dependencies are not assigned.", this);
+            enabled = false;
+            return false;
         }
 
-        Debug.LogError($"{LogPrefix} UI references or dependencies are not assigned.", this);
-        enabled = false;
-        return false;
+        return true;
     }
 
     private void BindViewModel()
@@ -144,6 +140,15 @@ public sealed class WeatherForecastUI : MonoBehaviour
     {
         _isInitialized = true;
         EnsureActiveUiLifecycle();
+    }
+
+    private void CancelAndDisposeCts()
+    {
+        if (_cts == null) return;
+
+        _cts.Cancel();
+        _cts.Dispose();
+        _cts = null;
     }
 
 }
