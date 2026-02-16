@@ -61,7 +61,8 @@ public sealed class WeatherForecastModel
 
     private static string BuildDisplayText(string city, OpenMeteoResponse data)
     {
-        if (data?.hourly?.time == null || data.hourly.temperature_2m == null || data.hourly.time.Length == 0)
+        if (data?.hourly?.time == null || data.hourly.temperature_2m == null ||
+            data.hourly.time.Length == 0 || data.hourly.temperature_2m.Length == 0)
         {
             return $"{city}\nNo data.";
         }
