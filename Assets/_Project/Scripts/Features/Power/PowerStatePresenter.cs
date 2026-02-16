@@ -28,7 +28,6 @@ public sealed class PowerStatePresenter : MonoBehaviour
         _isInitialized = true;
         BindState();
         BindInputs();
-        InitializeView();
     }
 
     private void OnEnable()
@@ -38,7 +37,6 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
         BindState();
         BindInputs();
-        InitializeView();
     }
 
     private void OnDisable()
@@ -89,11 +87,6 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
         _powerStateSubscription = _holder.State.ReactivePowerOn
             .Subscribe(isOn => _powerStateOutput.RenderPowerState(isOn));
-    }
-
-    private void InitializeView()
-    {
-        _powerStateOutput.RenderPowerState(_holder.State.ReactivePowerOn.Value);
     }
 
     private void UnbindInputs()
