@@ -2,7 +2,10 @@ using R3;
 using UnityEngine;
 using VContainer;
 
-// MVP: Presenter that connects input view and post-process view with AppState (model).
+/**
+* AppStateHolder から AppState を取得、操作（トグルボタン）に応じて状態を更新、状態変化を伝えるクラス
+* - 状態管理と UI/エフェクトの更新を連携
+*/
 public sealed class AppStatePresenter : MonoBehaviour
 {
     [Inject] private AppStateHolder _holder;
@@ -19,16 +22,15 @@ public sealed class AppStatePresenter : MonoBehaviour
         }
 
         _toggleView.ToggleRequested += OnToggleRequested;
-
         _holder.State.PowerOn
             .Subscribe(isOn => _postProcessView.ApplyPowerState(isOn))
             .AddTo(this);
-
         _postProcessView.ApplyPowerState(_holder.State.PowerOn.Value);
     }
 
     private void OnDestroy()
     {
+        // イベントの購読解除を行わないと、オブジェクトが破棄された後もイベントが発火し、NullReferenceException が発生する可能性がある
         if (_toggleView != null) _toggleView.ToggleRequested -= OnToggleRequested;
     }
 
