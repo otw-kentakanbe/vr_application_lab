@@ -18,14 +18,18 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     protected override void Configure(IContainerBuilder builder)
     {
-        RegisterSceneComponents(builder);
-        RegisterWeatherForecast(builder);
+        RegisterSharedState(builder);
+        RegisterPower(builder);
+        RegisterWeather(builder);
     }
 
-    // Scene 上のコンポーネントや ScriptableObject をコンテナに登録
-    private void RegisterSceneComponents(IContainerBuilder builder)
+    private void RegisterSharedState(IContainerBuilder builder)
     {
         if (appStateHolder != null) builder.RegisterComponent(appStateHolder);
+    }
+
+    private void RegisterPower(IContainerBuilder builder)
+    {
         if (powerStateEffectsController != null)
         {
             // IPowerStateOutput インターフェースとして登録することで、PowerStateEffectsController を直接参照せずに、IPowerStateOutput として依存注入できるようになる
@@ -33,6 +37,7 @@ public sealed class ProjectLifetimeScope : LifetimeScope
             // 例えば、テスト用のモック実装を作成して、IPowerStateOutput として登録すれば、PowerStatePresenter のテストが容易になる
             builder.RegisterComponent(powerStateEffectsController).As<IPowerStateOutput>();
         }
+
         if (powerToggleInteractor != null)
         {
             builder.RegisterComponent(powerToggleInteractor).As<IPowerToggleInput>();
@@ -46,13 +51,15 @@ public sealed class ProjectLifetimeScope : LifetimeScope
                     3.0f),
                 Lifetime.Singleton);
         }
+
         if (powerStatePresenter != null) builder.RegisterComponent(powerStatePresenter);
-        if (weatherForecastUI != null) builder.RegisterComponent(weatherForecastUI);
-        if (weatherForecastConfig != null) builder.RegisterInstance(weatherForecastConfig);
     }
 
-    private void RegisterWeatherForecast(IContainerBuilder builder)
+    private void RegisterWeather(IContainerBuilder builder)
     {
+        if (weatherForecastUI != null) builder.RegisterComponent(weatherForecastUI);
+        if (weatherForecastConfig != null) builder.RegisterInstance(weatherForecastConfig);
+
         // model: config 注入
         builder.Register(resolver =>
         {
