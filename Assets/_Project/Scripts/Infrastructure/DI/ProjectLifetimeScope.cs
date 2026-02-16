@@ -61,7 +61,11 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterPowerOutput(IContainerBuilder builder)
     {
-        if (_powerStateEffectsController == null) return;
+        if (_powerStateEffectsController == null)
+        {
+            Debug.LogWarning($"{LogPrefix} PowerStateEffectsController is not assigned. IPowerStateOutput will not be registered.", this);
+            return;
+        }
         // IPowerStateOutput インターフェースとして登録することで、PowerStateEffectsController を直接参照せずに、IPowerStateOutput として依存注入できるようになる
         // 直接参照しないことで、PowerStateEffectsController を別の実装に差し替えやすくなり、柔軟性が向上する
         // 例えば、テスト用のモック実装を作成して、IPowerStateOutput として登録すれば、PowerStatePresenter のテストが容易になる
@@ -70,7 +74,11 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterPowerInput(IContainerBuilder builder)
     {
-        if (_powerToggleInteractor == null) return;
+        if (_powerToggleInteractor == null)
+        {
+            Debug.LogWarning($"{LogPrefix} PowerToggleInteractor is not assigned. IPowerToggleInput will not be registered.", this);
+            return;
+        }
 
         builder.RegisterComponent(_powerToggleInteractor).As<IPowerToggleInput>();
         builder.Register(_ =>
@@ -86,7 +94,11 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterPowerPresenter(IContainerBuilder builder)
     {
-        if (_powerStatePresenter == null) return;
+        if (_powerStatePresenter == null)
+        {
+            Debug.LogWarning($"{LogPrefix} PowerStatePresenter is not assigned. Power presentation flow will be disabled.", this);
+            return;
+        }
         builder.RegisterComponent(_powerStatePresenter);
     }
 
