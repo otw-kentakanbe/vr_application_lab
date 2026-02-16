@@ -18,7 +18,9 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
+    private CancellationTokenSource _requestCts;
     private WeatherForecastViewModel _viewModel;
+    private bool _isLoading;
 
     private void Start()
     {
@@ -45,6 +47,8 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private void OnDisable()
     {
+        CancelAndDisposeRequestCts();
+
         if (_cts != null)
         {
             _cts.Cancel();
@@ -73,7 +77,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
             if (label != null) label.text = city.DisplayName;
 
             var capturedCity = city;
-            button.onClick.AddListener(() => _viewModel.SelectCity(capturedCity, _cts.Token).Forget());
+            button.onClick.AddListener(() => SelectCityAsync(capturedCity).Forget());
         }
     }
 
@@ -89,6 +93,49 @@ public sealed class WeatherForecastUI : MonoBehaviour
         for (var i = buttonContainer.childCount - 1; i >= 0; i--)
         {
             Destroy(buttonContainer.GetChild(i).gameObject);
+        }
+    }
+
+    private async UniTaskVoid SelectCityAsync(WeatherForecastConfig.CityConfig city)
+    {
+        if (_viewModel == null || _cts == null || _isLoading) return;
+
+        _isLoading = true;
+        SetButtonsInteractable(false);
+        CancelAndDisposeRequestCts();
+        _requestCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
+
+        try
+        {
+            await _viewModel.SelectCity(city, _requestCts.Token);
+        }
+        catch (System.OperationCanceledException)
+        {
+            // Ignore cancellation caused by lifecycle stop (OnDisable).
+        }
+        finally
+        {
+            _isLoading = false;
+            CancelAndDisposeRequestCts();
+            SetButtonsInteractable(true);
+        }
+    }
+
+    private void CancelAndDisposeRequestCts()
+    {
+        _requestCts?.Cancel();
+        _requestCts?.Dispose();
+        _requestCts = null;
+    }
+
+    private void SetButtonsInteractable(bool interactable)
+    {
+        foreach (var button in _generatedButtons)
+        {
+            if (button != null)
+            {
+                button.interactable = interactable;
+            }
         }
     }
 
