@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d55317b2161a462db49838cb0e071a2, type: 3}
   m_Name: WeatherForecastConfig_Client_A
   m_EditorClassIdentifier: Assembly-CSharp::WeatherForecastConfig
-  baseUrl: https://api.open-meteo.com/v1/forecast?hourly=temperature_2m
-  cacheTtlSeconds: 3600
-  cities:
-  - key: Tokyo
-    displayName: Tokyo
-    latitude: 35.68
-    longitude: 139.76
-  - key: NewYork
-    displayName: NewYork
-    latitude: 40.71
-    longitude: -74.01
+  _baseUrl: https://api.open-meteo.com/v1/forecast?hourly=temperature_2m
+  _cacheTtlSeconds: 3600
+  _cities:
+  - _key: Tokyo
+    _displayName: Tokyo
+    _latitude: 35.68
+    _longitude: 139.76
+  - _key: NewYork
+    _displayName: NewYork
+    _latitude: 40.71
+    _longitude: -74.01

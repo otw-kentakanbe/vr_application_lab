@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
@@ -16,53 +15,52 @@ public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
     private const float DefaultLastFireTime = -999f;
 
     public event Action ToggleRequested;
-    public Transform InteractorTransform => interactorVisual;
+    public Transform InteractorTransform => _interactorVisual;
 
     [Header("References")]
-    [SerializeField] private XRSimpleInteractable interactable;
-    [FormerlySerializedAs("buttonVisual")]
-    [SerializeField] private Transform interactorVisual;
+    [SerializeField] private XRSimpleInteractable _interactable;
+    [SerializeField] private Transform _interactorVisual;
 
     [Header("Debounce")]
     [Tooltip("Hover Enter Spam Prevention Cooldown (seconds)")]
-    [SerializeField] private float cooldownSeconds = DefaultCooldownSeconds;
+    [SerializeField] private float _cooldownSeconds = DefaultCooldownSeconds;
 
     private float _lastFireTime = DefaultLastFireTime;
 
     private void Reset()
     {
-        interactable = GetComponent<XRSimpleInteractable>();
+        _interactable = GetComponent<XRSimpleInteractable>();
         // transform: MonoBehaviour に用意されているプロパティ
         // 本 script がアタッチされている GameObject 自身の Transform を指す
-        interactorVisual = transform;
+        _interactorVisual = transform;
     }
 
     private void Awake()
     {
-        if (interactable == null)
+        if (_interactable == null)
         {
             Debug.LogError($"{LogPrefix} XRSimpleInteractable is not assigned.", this);
             enabled = false;
             return;
         }
 
-        if (interactorVisual == null) interactorVisual = transform;
+        if (_interactorVisual == null) _interactorVisual = transform;
 
         // 「当たったら」＝ Hover Enter
-        interactable.hoverEntered.AddListener(OnHoverEntered);
+        _interactable.hoverEntered.AddListener(OnHoverEntered);
     }
 
     private void OnDestroy()
     {
-        if (interactable == null) return;
+        if (_interactable == null) return;
 
-        interactable.hoverEntered.RemoveListener(OnHoverEntered);
+        _interactable.hoverEntered.RemoveListener(OnHoverEntered);
     }
 
     private void OnHoverEntered(HoverEnterEventArgs _)
     {
         // debounce.
-        if (Time.time - _lastFireTime < cooldownSeconds) return;
+        if (Time.time - _lastFireTime < _cooldownSeconds) return;
         _lastFireTime = Time.time;
 
         // PowerStatePresenter に状態変化を伝えるイベントを発火

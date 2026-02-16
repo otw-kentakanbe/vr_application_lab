@@ -18,9 +18,9 @@ public sealed class WeatherForecastUI : MonoBehaviour
     private const string LogPrefix = "[WeatherForecastUI]";
 
     [Header("UI")]
-    [SerializeField] private TextMeshProUGUI outputText;
-    [SerializeField] private Transform buttonContainer;
-    [SerializeField] private Button buttonPrefab;
+    [SerializeField] private TextMeshProUGUI _outputText;
+    [SerializeField] private Transform _buttonContainer;
+    [SerializeField] private Button _buttonPrefab;
 
     private readonly List<Button> _generatedButtons = new();
     private CancellationTokenSource _cts;
@@ -65,7 +65,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
         foreach (var city in _forecastViewModel.Cities)
         {
-            var button = Instantiate(buttonPrefab, buttonContainer);
+            var button = Instantiate(_buttonPrefab, _buttonContainer);
             _generatedButtons.Add(button);
 
             var capturedCity = city;
@@ -93,10 +93,10 @@ public sealed class WeatherForecastUI : MonoBehaviour
         }
         _generatedButtons.Clear();
 
-        if (buttonContainer == null) return;
-        for (var i = buttonContainer.childCount - 1; i >= 0; i--)
+        if (_buttonContainer == null) return;
+        for (var i = _buttonContainer.childCount - 1; i >= 0; i--)
         {
-            Destroy(buttonContainer.GetChild(i).gameObject);
+            Destroy(_buttonContainer.GetChild(i).gameObject);
         }
     }
 
@@ -112,7 +112,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private bool ValidateDependencies()
     {
-        if (outputText == null || buttonContainer == null || buttonPrefab == null || _forecastViewModel == null)
+        if (_outputText == null || _buttonContainer == null || _buttonPrefab == null || _forecastViewModel == null)
         {
             Debug.LogError($"{LogPrefix} UI references or dependencies are not assigned.", this);
             enabled = false;
@@ -129,7 +129,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
         // * text は、_forecastViewModel.ReactiveDisplayText（ReactiveProperty<string>）から流れてくる現在値/更新値
         // AddTo(this) を呼ぶことで、この MonoBehaviour が破棄されるときに自動的に購読解除される
         _forecastViewModel.ReactiveDisplayText
-            .Subscribe(latestText => outputText.text = latestText)
+            .Subscribe(latestText => _outputText.text = latestText)
             .AddTo(this);
         _forecastViewModel.ReactiveIsLoading
             .Subscribe(isLoading => SetButtonsInteractable(!isLoading))

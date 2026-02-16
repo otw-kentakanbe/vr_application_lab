@@ -597,12 +597,12 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
-  appStateHolder: {fileID: 1945497405}
-  powerStateEffectsController: {fileID: 1945497406}
-  powerToggleInteractor: {fileID: 1647894289}
-  powerStatePresenter: {fileID: 419150933}
-  weatherForecastUI: {fileID: 2070916321}
-  weatherForecastConfig: {fileID: 11400000, guid: 3428a8d282b9f4e749c2900d0bfab769, type: 2}
+  _appStateHolder: {fileID: 1945497405}
+  _powerStateEffectsController: {fileID: 1945497406}
+  _powerToggleInteractor: {fileID: 1647894289}
+  _powerStatePresenter: {fileID: 419150933}
+  _weatherForecastUI: {fileID: 2070916321}
+  _weatherForecastConfig: {fileID: 11400000, guid: 3428a8d282b9f4e749c2900d0bfab769, type: 2}
 --- !u!4 &605943105
 Transform:
   m_ObjectHideFlags: 0
@@ -1664,9 +1664,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95123c9c442245e41a2d75cba7236956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerToggleInteractor
-  interactable: {fileID: 1647894287}
-  interactorVisual: {fileID: 1647894288}
-  cooldownSeconds: 0.25
+  _interactable: {fileID: 1647894287}
+  _interactorVisual: {fileID: 1647894288}
+  _cooldownSeconds: 0.25
 --- !u!1001 &1901523135
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1793,15 +1793,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 123c0fe75afbff443bdb3d38664bf601, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerStateEffectsController
-  globalVolume: {fileID: 832575518}
-  bloomOn: 50
-  bloomOff: 0.2
-  vignetteOn: 10
-  vignetteOff: 0.1
-  onPowerOn:
+  _globalVolume: {fileID: 832575518}
+  _bloomOn: 10
+  _bloomOff: 0.2
+  _vignetteOn: 0.5
+  _vignetteOff: 0.1
+  _onPowerOn:
     m_PersistentCalls:
       m_Calls: []
-  onPowerOff:
+  _onPowerOff:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1975385847
@@ -1960,9 +1960,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 562a5553d68f445d8b17406fe180406d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeatherForecastUI
-  outputText: {fileID: 391373236}
-  buttonContainer: {fileID: 841950737}
-  buttonPrefab: {fileID: 3411952810001219648, guid: c229dd9b58ab8436c9a959b341f3cff5, type: 3}
+  _outputText: {fileID: 391373236}
+  _buttonContainer: {fileID: 841950737}
+  _buttonPrefab: {fileID: 3411952810001219648, guid: c229dd9b58ab8436c9a959b341f3cff5, type: 3}
 --- !u!1 &2112234139
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,12 +14,12 @@ public sealed class ProjectLifetimeScope : LifetimeScope
     private const float ToggleClickJumpDurationSeconds = 3.0f;
 
     [Header("Scene References")]
-    [SerializeField] private AppStateHolder appStateHolder;
-    [SerializeField] private PowerStateEffectsController powerStateEffectsController;
-    [SerializeField] private PowerToggleInteractor powerToggleInteractor;
-    [SerializeField] private PowerStatePresenter powerStatePresenter;
-    [SerializeField] private WeatherForecastUI weatherForecastUI;
-    [SerializeField] private WeatherForecastConfig weatherForecastConfig;
+    [SerializeField] private AppStateHolder _appStateHolder;
+    [SerializeField] private PowerStateEffectsController _powerStateEffectsController;
+    [SerializeField] private PowerToggleInteractor _powerToggleInteractor;
+    [SerializeField] private PowerStatePresenter _powerStatePresenter;
+    [SerializeField] private WeatherForecastUI _weatherForecastUI;
+    [SerializeField] private WeatherForecastConfig _weatherForecastConfig;
 
     protected override void Configure(IContainerBuilder builder)
     {
@@ -30,9 +30,9 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterSharedState(IContainerBuilder builder)
     {
-        if (appStateHolder == null) return;
+        if (_appStateHolder == null) return;
 
-        builder.RegisterComponent(appStateHolder);
+        builder.RegisterComponent(_appStateHolder);
     }
 
     private void RegisterPower(IContainerBuilder builder)
@@ -58,22 +58,22 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterPowerOutput(IContainerBuilder builder)
     {
-        if (powerStateEffectsController == null) return;
+        if (_powerStateEffectsController == null) return;
         // IPowerStateOutput インターフェースとして登録することで、PowerStateEffectsController を直接参照せずに、IPowerStateOutput として依存注入できるようになる
         // 直接参照しないことで、PowerStateEffectsController を別の実装に差し替えやすくなり、柔軟性が向上する
         // 例えば、テスト用のモック実装を作成して、IPowerStateOutput として登録すれば、PowerStatePresenter のテストが容易になる
-        builder.RegisterComponent(powerStateEffectsController).As<IPowerStateOutput>();
+        builder.RegisterComponent(_powerStateEffectsController).As<IPowerStateOutput>();
     }
 
     private void RegisterPowerInput(IContainerBuilder builder)
     {
-        if (powerToggleInteractor == null) return;
+        if (_powerToggleInteractor == null) return;
 
-        builder.RegisterComponent(powerToggleInteractor).As<IPowerToggleInput>();
+        builder.RegisterComponent(_powerToggleInteractor).As<IPowerToggleInput>();
         builder.Register(_ =>
             // PowerToggleInteractor の transform を受け取って、クリックエフェクトを再生する
             new PowerToggleClickedView(
-                powerToggleInteractor.InteractorTransform,
+                _powerToggleInteractor.InteractorTransform,
                 ToggleClickJumpEndPosition,
                 ToggleClickJumpPower,
                 ToggleClickJumpCount,
@@ -83,19 +83,19 @@ public sealed class ProjectLifetimeScope : LifetimeScope
 
     private void RegisterPowerPresenter(IContainerBuilder builder)
     {
-        if (powerStatePresenter == null) return;
-        builder.RegisterComponent(powerStatePresenter);
+        if (_powerStatePresenter == null) return;
+        builder.RegisterComponent(_powerStatePresenter);
     }
 
     private void RegisterWeatherView(IContainerBuilder builder)
     {
-        if (weatherForecastUI == null) return;
-        builder.RegisterComponent(weatherForecastUI);
+        if (_weatherForecastUI == null) return;
+        builder.RegisterComponent(_weatherForecastUI);
     }
 
     private void RegisterWeatherConfig(IContainerBuilder builder)
     {
-        if (weatherForecastConfig == null) return;
-        builder.RegisterInstance(weatherForecastConfig);
+        if (_weatherForecastConfig == null) return;
+        builder.RegisterInstance(_weatherForecastConfig);
     }
 }

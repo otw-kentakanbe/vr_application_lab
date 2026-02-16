@@ -13,17 +13,17 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
     private const string LogPrefix = "[PowerStateEffectsController]";
 
     [Header("References")]
-    [SerializeField] private Volume globalVolume;
+    [SerializeField] private Volume _globalVolume;
 
     [Header("PowerOn Values")]
-    [SerializeField] private float bloomOn = 1.0f;
-    [SerializeField] private float bloomOff = 0.2f;
-    [SerializeField] private float vignetteOn = 0.35f;
-    [SerializeField] private float vignetteOff = 0.10f;
+    [SerializeField] private float _bloomOn = 1.0f;
+    [SerializeField] private float _bloomOff = 0.2f;
+    [SerializeField] private float _vignetteOn = 0.35f;
+    [SerializeField] private float _vignetteOff = 0.10f;
 
     [Header("Events")]
-    [SerializeField] private UnityEvent onPowerOn;
-    [SerializeField] private UnityEvent onPowerOff;
+    [SerializeField] private UnityEvent _onPowerOn;
+    [SerializeField] private UnityEvent _onPowerOff;
 
     private Bloom _bloom;
     private Vignette _vignette;
@@ -39,14 +39,14 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
     {
         profile = null;
 
-        if (globalVolume == null)
+        if (_globalVolume == null)
         {
             Debug.LogError($"{LogPrefix} Global Volume is not assigned.", this);
             enabled = false;
             return false;
         }
 
-        profile = globalVolume.profile;
+        profile = _globalVolume.profile;
         if (profile != null) return true;
 
         Debug.LogError($"{LogPrefix} Volume profile is missing.", this);
@@ -70,18 +70,18 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
         ApplyVignette(isOn);
 
         // UnityEvent process.
-        (isOn ? onPowerOn : onPowerOff)?.Invoke();
+        (isOn ? _onPowerOn : _onPowerOff)?.Invoke();
     }
 
     private void ApplyBloom(bool isOn)
     {
         if (_bloom == null) return;
-        _bloom.intensity.value = isOn ? bloomOn : bloomOff;
+        _bloom.intensity.value = isOn ? _bloomOn : _bloomOff;
     }
 
     private void ApplyVignette(bool isOn)
     {
         if (_vignette == null) return;
-        _vignette.intensity.value = isOn ? vignetteOn : vignetteOff;
+        _vignette.intensity.value = isOn ? _vignetteOn : _vignetteOff;
     }
 }
