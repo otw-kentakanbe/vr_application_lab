@@ -22,6 +22,8 @@ public sealed class Hourly
 
 public sealed class WeatherForecastModel
 {
+    private const int DefaultCacheTtlSeconds = 60 * 60;
+
     private readonly string _baseUrl;
     private readonly int _cacheTtlSeconds;
     private readonly Dictionary<string, CacheEntry> _cache = new();
@@ -29,7 +31,7 @@ public sealed class WeatherForecastModel
     public WeatherForecastModel(string baseUrl, int cacheTtlSeconds)
     {
         _baseUrl = baseUrl;
-        _cacheTtlSeconds = cacheTtlSeconds;
+        _cacheTtlSeconds = cacheTtlSeconds > 0 ? cacheTtlSeconds : DefaultCacheTtlSeconds;
     }
 
     public async UniTask<string> FetchCityAsync(WeatherForecastConfig.CityConfig city, CancellationToken token)
@@ -55,7 +57,8 @@ public sealed class WeatherForecastModel
         var data = JsonUtility.FromJson<OpenMeteoResponse>(json);
         var displayText = BuildDisplayText(city.DisplayName, data);
 
-        _cache[city.Key] = new CacheEntry(displayText, now);
+        // set the cache save time to “when the successful response is received”.
+        _cache[city.Key] = new CacheEntry(displayText, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         return displayText;
     }
 
