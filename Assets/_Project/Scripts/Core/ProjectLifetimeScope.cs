@@ -5,7 +5,6 @@ using VContainer.Unity;
 /**
 * Secene 全体の依存関係を管理する LifetimeScope クラス
 */
-// set the execution order to the front to avoid injection timing inconsistencies.
 [DefaultExecutionOrder(-10000)]
 public sealed class ProjectLifetimeScope : LifetimeScope
 {
