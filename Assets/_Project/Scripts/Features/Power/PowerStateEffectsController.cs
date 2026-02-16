@@ -10,6 +10,8 @@ using UnityEngine.Rendering.Universal;
 */
 public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutput
 {
+    private const string LogPrefix = "[PowerStateEffectsController]";
+
     [Header("References")]
     [SerializeField] private Volume globalVolume;
 
@@ -30,14 +32,14 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
     {
         if (globalVolume == null)
         {
-            Debug.LogError("[PowerStateEffectsController] Global Volume is not assigned.", this);
+            Debug.LogError($"{LogPrefix} Global Volume is not assigned.", this);
             enabled = false;
             return;
         }
 
         if (globalVolume.profile == null)
         {
-            Debug.LogError("[PowerStateEffectsController] Volume profile is missing.", this);
+            Debug.LogError($"{LogPrefix} Volume profile is missing.", this);
             enabled = false;
             return;
         }
@@ -45,8 +47,8 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
         globalVolume.profile.TryGet(out _bloom);
         globalVolume.profile.TryGet(out _vignette);
 
-        if (_bloom == null) Debug.LogWarning("[PowerStateEffectsController] Bloom override not found in Volume profile.", this);
-        if (_vignette == null) Debug.LogWarning("[PowerStateEffectsController] Vignette override not found in Volume profile.", this);
+        if (_bloom == null) Debug.LogWarning($"{LogPrefix} Bloom override not found in Volume profile.", this);
+        if (_vignette == null) Debug.LogWarning($"{LogPrefix} Vignette override not found in Volume profile.", this);
     }
 
     public void RenderPowerState(bool isOn)

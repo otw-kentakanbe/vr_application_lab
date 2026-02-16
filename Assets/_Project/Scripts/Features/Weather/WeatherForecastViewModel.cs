@@ -12,6 +12,8 @@ using UnityEngine;
 */
 public sealed class WeatherForecastViewModel : IDisposable
 {
+    private const string LogPrefix = "[WeatherForecastViewModel]";
+
     private readonly WeatherForecastModel _model;
     private CancellationTokenSource _requestCts;
 
@@ -45,6 +47,7 @@ public sealed class WeatherForecastViewModel : IDisposable
         }
         catch (Exception ex)
         {
+            Debug.LogError($"{LogPrefix} Unexpected exception while fetching weather.");
             Debug.LogException(ex);
             ReactiveDisplayText.Value = "Unexpected Error.";
         }

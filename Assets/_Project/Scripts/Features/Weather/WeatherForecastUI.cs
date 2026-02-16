@@ -15,6 +15,8 @@ using VContainer;
 */
 public sealed class WeatherForecastUI : MonoBehaviour
 {
+    private const string LogPrefix = "[WeatherForecastUI]";
+
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI outputText;
     [SerializeField] private Transform buttonContainer;
@@ -29,7 +31,7 @@ public sealed class WeatherForecastUI : MonoBehaviour
     {
         if (outputText == null || buttonContainer == null || buttonPrefab == null || _forecastViewModel == null)
         {
-            Debug.LogError("[WeatherForecastUI] UI references or dependencies are not assigned.", this);
+            Debug.LogError($"{LogPrefix} UI references or dependencies are not assigned.", this);
             enabled = false;
             return;
         }

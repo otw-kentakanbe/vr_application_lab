@@ -10,6 +10,8 @@ using VContainer;
 */
 public sealed class PowerStatePresenter : MonoBehaviour
 {
+    private const string LogPrefix = "[PowerStatePresenter]";
+
     [Inject] private AppStateHolder _holder;
     [Inject] private IPowerToggleInput _powerToggleInput;
     [Inject] private IPowerStateOutput _powerStateOutput;
@@ -19,7 +21,7 @@ public sealed class PowerStatePresenter : MonoBehaviour
     {
         if (_holder == null || _powerToggleInput == null || _powerStateOutput == null || _powerToggleClickedView == null)
         {
-            Debug.LogError("[PowerStatePresenter] Dependencies are not injected.", this);
+            Debug.LogError($"{LogPrefix} Dependencies are not injected.", this);
             enabled = false;
             return;
         }

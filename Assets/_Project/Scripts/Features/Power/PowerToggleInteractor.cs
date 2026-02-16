@@ -11,6 +11,8 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 */
 public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 {
+    private const string LogPrefix = "[PowerToggleInteractor]";
+
     public event Action ToggleRequested;
     public Transform InteractorTransform => interactorVisual;
 
@@ -37,7 +39,7 @@ public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
     {
         if (interactable == null)
         {
-            Debug.LogError("[PowerToggleInteractor] XRSimpleInteractable is not assigned.", this);
+            Debug.LogError($"{LogPrefix} XRSimpleInteractable is not assigned.", this);
             enabled = false;
             return;
         }
