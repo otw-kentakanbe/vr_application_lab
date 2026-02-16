@@ -6,20 +6,6 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-[Serializable]
-public sealed class OpenMeteoResponse
-{
-    public string timezone;
-    public Hourly hourly;
-}
-
-[Serializable]
-public sealed class Hourly
-{
-    public string[] time;
-    public float[] temperature_2m;
-}
-
 /// <summary>
 /// WeatherForecastModel クラス
 /// - 天気予報の API からデータを取得する
@@ -61,7 +47,7 @@ public sealed class WeatherForecastModel
         }
 
         var json = req.downloadHandler.text;
-        var data = JsonUtility.FromJson<OpenMeteoResponse>(json);
+        var data = JsonUtility.FromJson<OpenMeteoResponseDto>(json);
         var displayText = BuildDisplayText(city.DisplayName, data);
 
         // set the cache save time to “when the successful response is received”.
@@ -69,7 +55,7 @@ public sealed class WeatherForecastModel
         return displayText;
     }
 
-    private static string BuildDisplayText(string city, OpenMeteoResponse data)
+    private static string BuildDisplayText(string city, OpenMeteoResponseDto data)
     {
         if (data?.hourly?.time == null || data.hourly.temperature_2m == null ||
             data.hourly.time.Length == 0 || data.hourly.temperature_2m.Length == 0)
