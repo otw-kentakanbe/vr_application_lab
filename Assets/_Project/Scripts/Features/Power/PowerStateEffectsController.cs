@@ -30,12 +30,13 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
 
     private void Awake()
     {
-        if (!TryGetVolumeProfile(out var profile)) return;
+        if (!ValidateReferences(out var profile)) return;
 
-        CacheVolumeOverrides(profile);
+        BindVolumeOverrides(profile);
+        InitializeOverrides();
     }
 
-    private bool TryGetVolumeProfile(out VolumeProfile profile)
+    private bool ValidateReferences(out VolumeProfile profile)
     {
         profile = null;
 
@@ -54,12 +55,15 @@ public sealed class PowerStateEffectsController : MonoBehaviour, IPowerStateOutp
         return false;
     }
 
-    private void CacheVolumeOverrides(VolumeProfile profile)
+    private void BindVolumeOverrides(VolumeProfile profile)
     {
         // set cached overrides, because accessing overrides from Volume Profile every time is costly.
         profile.TryGet(out _bloom);
         profile.TryGet(out _vignette);
+    }
 
+    private void InitializeOverrides()
+    {
         if (_bloom == null) Debug.LogWarning($"{LogPrefix} Bloom override not found in Volume profile.", this);
         if (_vignette == null) Debug.LogWarning($"{LogPrefix} Vignette override not found in Volume profile.", this);
     }

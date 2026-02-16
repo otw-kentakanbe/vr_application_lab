@@ -19,26 +19,16 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
     private void Start()
     {
-        if (_holder == null || _powerToggleInput == null || _powerStateOutput == null || _powerToggleClickedView == null)
-        {
-            Debug.LogError($"{LogPrefix} Dependencies are not injected.", this);
-            enabled = false;
-            return;
-        }
+        if (!ValidateDependencies()) return;
 
-        _powerToggleInput.ToggleRequested += OnToggleRequested;
-        _holder.State.ReactivePowerOn
-            .Subscribe(isOn => _powerStateOutput.RenderPowerState(isOn))
-            .AddTo(this);
-        _powerStateOutput.RenderPowerState(_holder.State.ReactivePowerOn.Value);
+        BindInputs();
+        BindState();
+        InitializeView();
     }
 
     private void OnDestroy()
     {
-        // イベントの購読解除を行わないと、オブジェクトが破棄された後もイベントが発火し、NullReferenceException が発生する可能性がある
-        if (_powerToggleInput == null) return;
-
-        _powerToggleInput.ToggleRequested -= OnToggleRequested;
+        UnbindInputs();
     }
 
     private void OnToggleRequested()
@@ -47,5 +37,41 @@ public sealed class PowerStatePresenter : MonoBehaviour
         _powerToggleClickedView.Play();
         // switch the power state,
         _holder.State.ReactivePowerOn.Value = !_holder.State.ReactivePowerOn.Value;
+    }
+
+    private bool ValidateDependencies()
+    {
+        if (_holder == null || _powerToggleInput == null || _powerStateOutput == null || _powerToggleClickedView == null)
+        {
+            Debug.LogError($"{LogPrefix} Dependencies are not injected.", this);
+            enabled = false;
+            return false;
+        }
+
+        return true;
+    }
+
+    private void BindInputs()
+    {
+        _powerToggleInput.ToggleRequested += OnToggleRequested;
+    }
+
+    private void BindState()
+    {
+        _holder.State.ReactivePowerOn
+            .Subscribe(isOn => _powerStateOutput.RenderPowerState(isOn))
+            .AddTo(this);
+    }
+
+    private void InitializeView()
+    {
+        _powerStateOutput.RenderPowerState(_holder.State.ReactivePowerOn.Value);
+    }
+
+    private void UnbindInputs()
+    {
+        // イベントの購読解除を行わないと、オブジェクトが破棄された後もイベントが発火し、NullReferenceException が発生する可能性がある
+        if (_powerToggleInput == null) return;
+        _powerToggleInput.ToggleRequested -= OnToggleRequested;
     }
 }

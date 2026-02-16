@@ -30,31 +30,20 @@ public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
     private void Reset()
     {
         _interactable = GetComponent<XRSimpleInteractable>();
-        // transform: MonoBehaviour に用意されているプロパティ
-        // 本 script がアタッチされている GameObject 自身の Transform を指す
         _interactorVisual = transform;
     }
 
     private void Awake()
     {
-        if (_interactable == null)
-        {
-            Debug.LogError($"{LogPrefix} XRSimpleInteractable is not assigned.", this);
-            enabled = false;
-            return;
-        }
+        if (!ValidateReferences()) return;
 
-        if (_interactorVisual == null) _interactorVisual = transform;
-
-        // 「当たったら」＝ Hover Enter
-        _interactable.hoverEntered.AddListener(OnHoverEntered);
+        InitializeReferences();
+        BindInteractionEvents();
     }
 
     private void OnDestroy()
     {
-        if (_interactable == null) return;
-
-        _interactable.hoverEntered.RemoveListener(OnHoverEntered);
+        UnbindInteractionEvents();
     }
 
     private void OnHoverEntered(HoverEnterEventArgs _)
@@ -65,5 +54,35 @@ public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 
         // PowerStatePresenter に状態変化を伝えるイベントを発火
         ToggleRequested?.Invoke();
+    }
+
+    private bool ValidateReferences()
+    {
+        if (_interactable == null)
+        {
+            Debug.LogError($"{LogPrefix} XRSimpleInteractable is not assigned.", this);
+            enabled = false;
+            return false;
+        }
+
+        return true;
+    }
+
+    private void InitializeReferences()
+    {
+        if (_interactorVisual == null) _interactorVisual = transform;
+    }
+
+    private void BindInteractionEvents()
+    {
+        // 「当たったら」＝ Hover Enter
+        _interactable.hoverEntered.AddListener(OnHoverEntered);
+    }
+
+    private void UnbindInteractionEvents()
+    {
+        if (_interactable == null) return;
+
+        _interactable.hoverEntered.RemoveListener(OnHoverEntered);
     }
 }
