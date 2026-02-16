@@ -1,4 +1,5 @@
 using R3;
+using System;
 using UnityEngine;
 using VContainer;
 
@@ -18,33 +19,38 @@ public sealed class PowerStatePresenter : MonoBehaviour
     [Inject] private PowerToggleClickedView _powerToggleClickedView;
     private bool _isInitialized;
     private bool _isInputBound;
+    private IDisposable _powerStateSubscription;
 
     private void Start()
     {
         if (!ValidateDependencies()) return;
 
-        BindState();
-        InitializeView();
         _isInitialized = true;
+        BindState();
         BindInputs();
+        InitializeView();
     }
 
     private void OnEnable()
     {
-        // when starting, _isInitialized is false, so skip BindInputs to avoid unnecessary subscription.
+        // when starting, _isInitialized is false, so skip binding/initialize until Start runs.
         if (!_isInitialized) return;
 
+        BindState();
         BindInputs();
+        InitializeView();
     }
 
     private void OnDisable()
     {
         UnbindInputs();
+        UnbindState();
     }
 
     private void OnDestroy()
     {
         UnbindInputs();
+        UnbindState();
     }
 
     private void OnToggleRequested()
@@ -78,9 +84,11 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
     private void BindState()
     {
-        _holder.State.ReactivePowerOn
-            .Subscribe(isOn => _powerStateOutput.RenderPowerState(isOn))
-            .AddTo(this);
+        // avoid multiple subscription.
+        if (_powerStateSubscription != null) return;
+
+        _powerStateSubscription = _holder.State.ReactivePowerOn
+            .Subscribe(isOn => _powerStateOutput.RenderPowerState(isOn));
     }
 
     private void InitializeView()
@@ -95,5 +103,11 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
         _powerToggleInput.ToggleRequested -= OnToggleRequested;
         _isInputBound = false;
+    }
+
+    private void UnbindState()
+    {
+        _powerStateSubscription?.Dispose();
+        _powerStateSubscription = null;
     }
 }
