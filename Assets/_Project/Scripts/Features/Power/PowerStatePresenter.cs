@@ -16,14 +16,30 @@ public sealed class PowerStatePresenter : MonoBehaviour
     [Inject] private IPowerToggleInput _powerToggleInput;
     [Inject] private IPowerStateOutput _powerStateOutput;
     [Inject] private PowerToggleClickedView _powerToggleClickedView;
+    private bool _isInitialized;
+    private bool _isInputBound;
 
     private void Start()
     {
         if (!ValidateDependencies()) return;
 
-        BindInputs();
         BindState();
         InitializeView();
+        _isInitialized = true;
+        BindInputs();
+    }
+
+    private void OnEnable()
+    {
+        // when starting, _isInitialized is false, so skip BindInputs to avoid unnecessary subscription.
+        if (!_isInitialized) return;
+
+        BindInputs();
+    }
+
+    private void OnDisable()
+    {
+        UnbindInputs();
     }
 
     private void OnDestroy()
@@ -53,7 +69,11 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
     private void BindInputs()
     {
+        // avoid multiple subscription.
+        if (_isInputBound || _powerToggleInput == null) return;
+
         _powerToggleInput.ToggleRequested += OnToggleRequested;
+        _isInputBound = true;
     }
 
     private void BindState()
@@ -71,7 +91,9 @@ public sealed class PowerStatePresenter : MonoBehaviour
     private void UnbindInputs()
     {
         // イベントの購読解除を行わないと、オブジェクトが破棄された後もイベントが発火し、NullReferenceException が発生する可能性がある
-        if (_powerToggleInput == null) return;
+        if (!_isInputBound || _powerToggleInput == null) return;
+
         _powerToggleInput.ToggleRequested -= OnToggleRequested;
+        _isInputBound = false;
     }
 }
