@@ -22,10 +22,10 @@ public sealed class PowerStatePresenter : MonoBehaviour
         }
 
         _toggleInteractor.ToggleRequested += OnToggleRequested;
-        _holder.State.PowerOn
+        _holder.State.ReactivePowerOn
             .Subscribe(isOn => _stateEffectController.ApplyPowerState(isOn))
             .AddTo(this);
-        _stateEffectController.ApplyPowerState(_holder.State.PowerOn.Value);
+        _stateEffectController.ApplyPowerState(_holder.State.ReactivePowerOn.Value);
     }
 
     private void OnDestroy()
@@ -36,6 +36,6 @@ public sealed class PowerStatePresenter : MonoBehaviour
 
     private void OnToggleRequested()
     {
-        _holder.State.PowerOn.Value = !_holder.State.PowerOn.Value;
+        _holder.State.ReactivePowerOn.Value = !_holder.State.ReactivePowerOn.Value;
     }
 }

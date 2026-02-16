@@ -31,11 +31,11 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
         _cts = new CancellationTokenSource();
 
-        // ViewModel の DisplayText を監視して、UI の outputText に反映する
+        // ViewModel の ReactiveDisplayText を監視して、UI の outputText に反映する
         // ReactiveProperty を Subscribe して、値が変わるたびに outputText.text を更新する
-        // * text は、_forecastViewModel.DisplayText（ReactiveProperty<string>）から流れてくる現在値/更新値
+        // * text は、_forecastViewModel.ReactiveDisplayText（ReactiveProperty<string>）から流れてくる現在値/更新値
         // AddTo(this) を呼ぶことで、この MonoBehaviour が破棄されるときに自動的に購読解除される
-        _forecastViewModel.DisplayText
+        _forecastViewModel.ReactiveDisplayText
             .Subscribe(text => outputText.text = text)
             .AddTo(this);
 

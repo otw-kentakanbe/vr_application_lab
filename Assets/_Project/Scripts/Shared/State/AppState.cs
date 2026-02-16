@@ -8,5 +8,5 @@ using R3;
 */
 public sealed class AppState
 {
-    public ReactiveProperty<bool> PowerOn { get; } = new(false);
+    public ReactiveProperty<bool> ReactivePowerOn { get; } = new(false);
 }
