@@ -36,7 +36,9 @@ public sealed class PowerStatePresenter : MonoBehaviour
     private void OnDestroy()
     {
         // イベントの購読解除を行わないと、オブジェクトが破棄された後もイベントが発火し、NullReferenceException が発生する可能性がある
-        if (_powerToggleInput != null) _powerToggleInput.ToggleRequested -= OnToggleRequested;
+        if (_powerToggleInput == null) return;
+
+        _powerToggleInput.ToggleRequested -= OnToggleRequested;
     }
 
     private void OnToggleRequested()

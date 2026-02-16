@@ -71,12 +71,15 @@ public sealed class WeatherForecastUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_cts != null)
+        if (_cts == null)
         {
-            _cts.Cancel();
-            _cts.Dispose();
-            _cts = null;
+            CleanupButtons();
+            return;
         }
+
+        _cts.Cancel();
+        _cts.Dispose();
+        _cts = null;
 
         CleanupButtons();
     }
@@ -107,7 +110,9 @@ public sealed class WeatherForecastUI : MonoBehaviour
     {
         foreach (var button in _generatedButtons)
         {
-            if (button != null) button.onClick.RemoveAllListeners();
+            if (button == null) continue;
+
+            button.onClick.RemoveAllListeners();
         }
         _generatedButtons.Clear();
 
@@ -122,10 +127,9 @@ public sealed class WeatherForecastUI : MonoBehaviour
     {
         foreach (var button in _generatedButtons)
         {
-            if (button != null)
-            {
-                button.interactable = interactable;
-            }
+            if (button == null) continue;
+
+            button.interactable = interactable;
         }
     }
 

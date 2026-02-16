@@ -52,7 +52,9 @@ public sealed class PowerToggleInteractor : MonoBehaviour, IPowerToggleInput
 
     private void OnDestroy()
     {
-        if (interactable != null) interactable.hoverEntered.RemoveListener(OnHoverEntered);
+        if (interactable == null) return;
+
+        interactable.hoverEntered.RemoveListener(OnHoverEntered);
     }
 
     private void OnHoverEntered(HoverEnterEventArgs _)
