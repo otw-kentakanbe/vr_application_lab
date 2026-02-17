@@ -12,34 +12,36 @@ Unity の VR 開発検証用プロジェクト
 | Item | Description |
 |---|---|
 | Unity | `6000.3.2f1` |
-| Render Pipeline | URP (`com.unity.render-pipelines.universal: 17.3.0`) |
-| XR | OpenXR (`com.unity.xr.openxr: 1.16.1`), XR Interaction Toolkit (`3.3.1`) |
+| Render Pipeline | URP (`17.3.0`) |
+| XR | OpenXR (`1.16.1`), XR Interaction Toolkit (`3.3.1`) |
 
 ## Architecture & Tech
-| Tech | Version/Package | Description |
+| Tech | Version | Description |
 |---|---|---|
-| VContainer | `jp.hadashikick.vcontainer#1.17.0` | 依存性注入（DI）コンテナ。`ProjectLifetimeScope` で Scene コンポーネント / Model / ViewModel を登録 |
-| R3 | `com.cysharp.r3: 1.3.0` | `ReactiveProperty` による状態変化の購読・伝播 |
-| UniTask | `com.cysharp.unitask` | 非同期 API 呼び出し（`UnityWebRequest`） |
-| UnityEvent | `UnityEngine.Events.UnityEvent` | `PowerStateEffectsController` で状態変化時の拡張イベントを Inspector から設定 |
-| DOTween | `Assets/Plugins/Demigiant/DOTween` | ボタン押下時などの簡易アニメーション |
-| TextMeshPro | `com.unity.ugui` + TMP | UI テキスト表示 |
+| VContainer | `1.17.0` | 依存性注入（DI）コンテナ。`ProjectLifetimeScope` で Scene コンポーネント / Model / ViewModel を登録 |
+| R3 | `1.3.0` | `ReactiveProperty` による状態変化の購読・伝播 |
+| UniTask | - | 非同期 API 呼び出し（`UnityWebRequest`） |
+| UnityEvent | - | `PowerStateEffectsController` で状態変化時の拡張イベントを Inspector から設定 |
+| DOTween | - | ボタン押下時などの簡易アニメーション |
+| TextMeshPro | - | UI テキスト表示 |
 
 ## MVP (PowerToggle)
 | Role | File | Processing |
 |---|---|---|
 | Presenter | `Assets/_Project/Scripts/Features/Power/PowerStatePresenter.cs` | 入力イベント購読、`AppState` 更新、`IPowerStateOutput.RenderPowerState` 呼び出し、クリック演出トリガー |
-| View (Input) | `Assets/_Project/Scripts/Features/Power/PowerToggleInteractor.cs` | XR Hover を受けて `ToggleRequested` を発火（デバウンスあり） |
-| View (Output) | `Assets/_Project/Scripts/Features/Power/PowerStateEffectsController.cs` | 電源状態に応じて Bloom/Vignette を更新、`UnityEvent` を発火 |
-| View (Feedback) | `Assets/_Project/Scripts/Features/Power/PowerToggleClickedView.cs` | DOTween でクリック時のジャンプ演出を再生 |
-| Contract | `Assets/_Project/Scripts/Features/Power/Interfaces/PowerInterfaces.cs` | Presenter と View の依存を Interface で分離 |
+| View (Input) | `Assets/_Project/Scripts/Features/Power/PowerToggleInteractor.cs` | XR Hover を受けて `ToggleRequested` を発火 |
+| View (Output) | `Assets/_Project/Scripts/Features/Power/PowerStateEffectsController.cs` | 電源状態に応じて `Bloom`/`Vignette` を更新、`UnityEvent` を発火 |
+| View (Feedback) | `Assets/_Project/Scripts/Features/Power/PowerToggleClickedView.cs` | `DOTween` でクリック時のジャンプ演出を再生 |
+| Interface | `Assets/_Project/Scripts/Features/Power/Interfaces/PowerInterfaces.cs` |  |
 
 ## MVVM (WeatherForecast)
 | Role | File | Processing |
 |---|---|---|
 | Model | `Assets/_Project/Scripts/Features/Weather/WeatherForecastModel.cs` | Open-Meteo API 呼び出し、レスポンス整形、都市別キャッシュ（TTL） |
+| DTO | `Assets/_Project/Scripts/Features/Weather/Models/Dto/OpenMeteoResponseDto.cs` | Open-Meteo API レスポンスルート定義（internal DTO） |
+| DTO | `Assets/_Project/Scripts/Features/Weather/Models/Dto/OpenMeteoHourlyDto.cs` | Open-Meteo API `hourly` フィールド定義（internal DTO） |
 | ViewModel | `Assets/_Project/Scripts/Features/Weather/WeatherForecastViewModel.cs` | 選択都市の取得処理、`ReactiveDisplayText`/`ReactiveIsLoading` 更新、キャンセル制御 |
-| View | `Assets/_Project/Scripts/Features/Weather/WeatherForecastUI.cs` | 都市ボタン生成、ViewModel の `ReactiveProperty` 購読、非同期呼び出し連携 |
+| View | `Assets/_Project/Scripts/Features/Weather/WeatherForecastUI.cs` | 都市ボタン生成、ViewModel の購読、`OnEnable/OnDisable` で購読・キャンセルを明示管理 |
 | Config | `Assets/_Project/Scripts/Features/Weather/WeatherForecastConfig.cs` | API URL、TTL 秒数、都市定義（key/name/lat/lon）を保持 |
 
 ## Folder Structure
@@ -72,6 +74,10 @@ Assets/
           PowerStateEffectsController.cs
           PowerToggleClickedView.cs
         Weather/
+          Models/
+            Dto/
+              OpenMeteoResponseDto.cs
+              OpenMeteoHourlyDto.cs
           WeatherForecastConfig.cs
           WeatherForecastModel.cs
           WeatherForecastUI.cs
